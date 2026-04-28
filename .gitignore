@@ -9,3 +9,5 @@
 !*.tf
 !*.ps1
 !.gitignore
+!LICENSE
+!CONTRIBUTING.md
