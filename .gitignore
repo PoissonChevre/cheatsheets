@@ -1,0 +1,11 @@
+# Ignore everything
+*
+
+# Track only Markdown files and scripts
+!*/
+!*.md
+!*.sh
+!*.py
+!*.tf
+!*.ps1
+!.gitignore
