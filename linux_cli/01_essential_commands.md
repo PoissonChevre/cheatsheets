@@ -1,230 +1,483 @@
 # LFCS — Essential Commands (20%)
 
-## File & Directory Navigation
+> Navigation, file manipulation, search, text processing, archives, permissions, ACLs, help.
+
+---
+
+## Navigation & Listing
 
 ```bash
-ls                          # List files in current directory
-ls -la /home/bob/data/      # Long listing including hidden files (find hidden files)
-ls -al                      # Formatted listing with hidden files
-ls -Z /bin/sudo             # Display SELinux label for the file
+pwd                                  # Print working directory
+cd dir                               # Change directory
+cd                                   # Home directory
+cd -                                 # Previous directory
 
-cd dir                      # Change directory to dir
-cd                          # Change to home directory
-cd -                        # Switch to previous directory
-pwd                         # Print working directory
+ls                                   # List files
+ls -la                               # Long listing + hidden files
+ls -lah                              # Human-readable sizes
+ls -lahZ                             # + SELinux context
+ls -ltr                              # Sort by time, oldest last
+```
 
-mkdir dir                   # Create a directory
-mkdir -p /a/b/c             # Create directory tree, no error if existing
+## Directory Management
 
-rmdir dir                   # Remove empty directory
+```bash
+mkdir dir                            # Create directory
+mkdir -p /a/b/c                      # Create tree, no error if existing
+rmdir dir                            # Remove EMPTY directory
+rm -rf dir                           # Remove directory recursively (use with care)
 ```
 
 ## File Manipulation
 
 ```bash
-touch /home/bob/myfile      # Create empty file or update timestamp
-touch path/file             # Create new empty file
+touch file                           # Create empty file or update timestamp
 
-cp file1 file2              # Copy file1 to file2
-cp -r dir1 dir2             # Copy dir1 to dir2 recursively (creates dir2 if absent)
+cp file1 file2                       # Copy
+cp -r dir1 dir2                      # Copy recursively
+cp -a src dst                        # Archive mode (preserves all attributes)
 
-mv file1 file2              # Rename or move file1 to file2 (if file2 is a dir, file1 moves into it)
+mv file1 file2                       # Move/rename
+rm file                              # Delete
+rm -rf dir                           # Force delete recursively
 
-rm file                     # Delete file
-rm -r dir                   # Delete directory recursively
-rm -f file                  # Force remove file (no prompt)
-rm -rf dir                  # Force remove directory recursively  *use with extreme caution*
-
-ln -s /target /link         # Create a symbolic link
-
-cat > file                  # Place standard input into file
-cat file                    # Read / output file contents
-more file                   # Output contents one page at a time
-less file                   # Paginated view (opposite of more, allows back-scroll)
-head file                   # First 10 lines of file
-head -n 20 file             # First 20 lines
-tail file                   # Last 10 lines of file
-tail -n 20 file             # Last 20 lines
-tail -f file                # Follow file as it grows (logs)
+ln -s /target /link                  # Symbolic link (relative or absolute)
+ln /target /link                     # Hard link (same inode, same FS only)
 ```
+
+## File Inspection
+
+```bash
+cat file                             # Show full content
+less file                            # Paginated, scrollable (q to quit, / to search)
+more file                            # Paginated forward only
+head file                            # First 10 lines
+head -n 20 file                      # First 20 lines
+tail file                            # Last 10 lines
+tail -n 20 file                      # Last 20 lines
+tail -f file                         # Follow growing file (logs)
+
+stat file                            # Detailed metadata (inode, timestamps, perms)
+file fichier                         # Identify file type (binary, ASCII, etc.)
+```
+
+---
 
 ## Searching Files & Content
 
-```bash
-grep pattern files                  # Search for pattern in files
-grep -r pattern dir                 # Recursive search for pattern in dir
-grep -Iris 'string' /dir/           # Recursive, case-insensitive, ignore binaries, silent on errors
-grep -r --text 'reboot' /var/log/   # Recursive search treating binary files as text
-command | grep pattern              # Filter command output
-
-find <dir> -name "*.conf"           # Find files by name
-find <dir> -mmin -<n> -type f       # Files modified in the last <n> minutes
-find . -mmin -5 -type f             # Example: files modified in last 5 minutes
-find <dir> -size +100M              # Files larger than 100 MB
-find <dir> -user john               # Files owned by user john
-find <dir> -perm 644                # Files with exact permissions
-
-locate filename                     # Quick database-based file lookup
-which app                           # Show full path of an executable
-whereis app                         # Show binary, source and man-page locations
-```
-
-## Text Processing & Streams
+### find — by attributes
 
 ```bash
-wc -l file                  # Count lines, words, characters
-sort file                   # Sort lines alphabetically
-uniq                        # Remove duplicate lines (use after sort)
-cut -d: -f1 /etc/passwd     # Cut field 1, ":" delimited
-col<n> "<separator>" file   # Show only the nth column (col2 "," foo.csv)
-awk '{print $2}' file       # Print second field of each line
-sed 's/old/new/g' file      # Substitute text globally in file
+find <dir> -name "*.conf"            # By name pattern
+find <dir> -iname "*.LOG"            # Case-insensitive
+find <dir> -type f                   # Files only
+find <dir> -type d                   # Directories only
+find <dir> -size +100M               # Larger than 100M
+find <dir> -size -3k                 # Smaller than 3K
+find <dir> -mmin -5                  # Modified in last 5 min
+find <dir> -mtime -7                 # Modified in last 7 days
+find <dir> -user john                # Owned by john
+find <dir> -group dev                # Owned by group dev
+find <dir> -perm 644                 # Exact permissions
+find <dir> -perm /4000               # SUID files (security audit)
+find <dir> -maxdepth 1               # Limit depth (current dir only)
+find <dir> ! -newermt "2020-01-01"   # Older than date
 
-diff file1 file2            # Compare files line by line
-cmp file1 file2             # Compare files byte by byte
-
-tee file                    # Write input to file AND stdout
-echo "content" | sudo tee /etc/file    # Useful when redirection needs root
+# Execute action on results
+find <dir> -name "*.tmp" -delete                 # Delete matches
+find <dir> -name "*.log" -exec gzip {} \;        # One command per file
+find <dir> -name "*.log" -exec gzip {} +         # Batch (faster)
+find <dir> -size +10k -exec mv {} /backup/ \;   # Move large files
 ```
+
+**Pitfalls:**
+- `-maxdepth N` must come **before** other filters
+- Always test with listing **before** adding `-delete` or `-exec rm`
+- `-exec ... \;` runs once per file (slow); `-exec ... +` batches (fast)
+
+### grep — by content
+
+```bash
+grep "pattern" file                  # Basic search
+grep -i "pattern" file               # Case-insensitive
+grep -v "pattern" file               # Invert (lines NOT matching)
+grep -r "pattern" /dir/              # Recursive
+grep -E "regex" file                 # Extended regex (+, ?, |, ())
+grep -c "pattern" file               # Count matching lines
+grep -n "pattern" file               # Show line numbers
+grep -l "pattern" *                  # List files containing pattern
+grep -Iris "pattern" /dir/           # Recursive, case-insensitive, ignore binaries, silent
+```
+
+### Other search tools
+
+```bash
+locate filename                      # Fast DB lookup (run updatedb first)
+which command                        # Path of executable in PATH
+whereis command                      # Binary, source, man pages
+type command                         # Show whether command is alias/builtin/file
+```
+
+---
+
+## Text Processing
+
+```bash
+wc -l file                           # Count lines
+wc -w file                           # Count words
+wc -c file                           # Count characters
+
+sort file                            # Sort alphabetically
+sort -n file                         # Numeric sort
+sort -r file                         # Reverse
+sort -k2 file                        # Sort by column 2
+sort -u file                         # Sort + unique
+
+uniq file                            # Remove adjacent duplicates (sort first!)
+uniq -c                              # Prefix lines with count
+
+cut -d: -f1 /etc/passwd              # Field 1, ":" delimiter
+cut -d, -f1,3 file.csv               # Fields 1 and 3 from CSV
+cut -c1-10 file                      # Characters 1-10
+
+awk '{print $2}' file                # Print 2nd field (whitespace delim)
+awk -F: '{print $1}' /etc/passwd     # ":" as delimiter
+
+diff file1 file2                     # Line-by-line diff
+diff -u file1 file2                  # Unified format (like Git)
+cmp file1 file2                      # Byte-by-byte comparison
+
+tee file                             # Write to file AND stdout
+echo "x" | sudo tee /etc/file        # Useful when redirection needs root
+echo "x" | sudo tee -a /etc/file     # Append mode
+```
+
+### sed — stream editor
+
+```bash
+sed 's/old/new/' file                # Replace first occurrence per line
+sed 's/old/new/g' file               # Replace all occurrences
+sed 's/old/new/2' file               # Replace 2nd occurrence per line
+sed -i 's/old/new/g' file            # In-place modification
+sed -i.bak 's/old/new/g' file        # In-place + automatic .bak backup
+sed -n '5,10p' file                  # Print lines 5 to 10
+sed '/pattern/d' file                # Delete lines matching pattern
+```
+
+**Pitfall:** `sed -i` without backup = no undo. Use `sed -i.bak` for safety.
+
+---
+
+## Regex Quick Reference
+
+### Basic regex
+
+| Symbol | Meaning |
+|---|---|
+| `.` | Any single character |
+| `*` | 0 or more of previous |
+| `.*` | Anything (any sequence) |
+| `^` | Start of line |
+| `$` | End of line |
+| `[abc]` | One of a, b, or c |
+| `[^abc]` | NOT a, b, or c |
+| `[0-9]` | Range |
+| `\.` | Literal dot (escaped) |
+
+### Extended regex (`grep -E`)
+
+| Symbol | Meaning |
+|---|---|
+| `+` | 1 or more of previous |
+| `?` | 0 or 1 of previous |
+| `\|` | OR |
+| `()` | Group |
+| `{n}` | Exactly n times |
+| `{n,m}` | Between n and m times |
+
+### Common patterns
+
+```bash
+grep -E "^root"                      # Lines starting with root
+grep -E "bash$"                      # Lines ending with bash
+grep -E "^$"                         # Empty lines
+grep -E "[0-9]+"                     # One or more digits
+grep -E "/app/user.*hacker-bot/1.2"  # Order-imposed match
+sed 's/^container.*24h$/REMOVED/'    # Replace full pattern lines
+```
+
+---
 
 ## Redirection & Pipes
 
 ```bash
-command > file              # Redirect stdout to file (overwrite)
-command >> file             # Append stdout to file
-command 2> file             # Redirect stderr to file
-command > file 2>&1         # Redirect both stdout and stderr
-command1 | command2         # Pipe stdout of cmd1 into cmd2
-command < file              # Read stdin from file
-command > /dev/null 2>&1    # Discard all output
+command > file                       # stdout to file (overwrite)
+command >> file                      # stdout to file (append)
+command 2> file                      # stderr to file
+command 2>> file                     # stderr append
+command > file 2>&1                  # stdout AND stderr to same file
+command &> file                      # Same as above (bash shortcut)
+command < file                       # stdin from file
+command1 | command2                  # Pipe stdout of cmd1 to cmd2
+command > /dev/null 2>&1             # Discard all output
 ```
 
-## File Creation Helpers
+**Pitfalls:**
+- Order matters: `> file 2>&1` works, `2>&1 > file` does NOT redirect stderr to file
+- `>` overwrites, `>>` appends
+- `2>&1` means "send stderr where stdout is currently going"
+
+---
+
+## Exit Code (`$?`)
 
 ```bash
-touch <filename>                       # Create empty file
-fallocate -l <size> <filename>         # Create file of specific size
-echo "<content>" > <filename>          # Create file with content
+command
+echo $?                              # Exit code of LAST command (0 = success)
+
+command
+EXIT=$?                              # Save before running anything else
+echo "anything"                      # This overwrites $?
+echo $EXIT                           # Saved value still valid
 ```
+
+**Pitfall:** `$?` is overwritten by every command. Capture immediately or save in variable.
+
+| Code | Meaning |
+|---|---|
+| 0 | Success |
+| 1 | Generic error |
+| 2 | Misuse of command |
+| 126 | Permission denied |
+| 127 | Command not found |
+| 130 | Ctrl+C (128 + 2) |
+| 137 | Killed (128 + 9) |
+
+---
 
 ## Archives & Compression
 
-```bash
-tar cf archive.tar files                  # Create tar archive
-tar xf archive.tar                        # Extract tar archive
-tar czf archive.tar.gz files              # Create gzip-compressed tar
-tar xzf archive.tar.gz                    # Extract gzip tar
-tar cvzf <target>.tar.gz <source dir>     # Verbose pack into gzip tar
-tar cjf archive.tar.bz2 files             # Create bzip2-compressed tar
-tar xjf archive.tar.bz2                   # Extract bzip2 tar
-
-gzip file                                 # Compress file → file.gz
-gzip -d file.gz                           # Decompress file.gz back to file
-gunzip file.gz                            # Same as gzip -d
-
-zip -r <target> <source dir>              # Create zip archive
-unzip <zip file>                          # Extract zip archive
-```
-
-## File Permissions & Ownership
+### tar
 
 ```bash
-chmod 777 file              # rwxrwxrwx — read, write, execute for all
-chmod 755 file              # rwxr-xr-x — owner full, others rx
-chmod 644 file              # rw-r--r-- — owner rw, others r
-chmod u+x ./script.sh       # Add execute permission for owner
-chmod -R 750 dir/           # Recursive permission change
-# Octal values: 4=read, 2=write, 1=execute   (sum them per role)
+tar cf archive.tar files             # Create uncompressed
+tar xf archive.tar                   # Extract uncompressed
+tar tf archive.tar                   # List contents (no extract)
 
-chown user:group file       # Change owner and group
-chown -R user:group /dir/   # Recursive ownership change
-chgrp group file            # Change group ownership only
+tar czf archive.tar.gz files         # Create gzip
+tar xzf archive.tar.gz               # Extract gzip
+tar tzf archive.tar.gz               # List gzip contents
 
-umask 022                   # Default mask: new files 644, dirs 755
+tar cjf archive.tar.bz2 files        # Create bzip2
+tar xjf archive.tar.bz2              # Extract bzip2
+
+tar cJf archive.tar.xz files         # Create xz (best compression, slowest)
+
+# Custom compression level
+tar -I 'gzip -9' -cf archive.tar.gz dir/    # Best gzip compression
+tar -I 'gzip -1' -cf archive.tar.gz dir/    # Fastest gzip
+
+# Mnemonic: Create / eXtract / list / Zipped / file
 ```
+
+**Pitfalls:**
+- `GZIP=-9 tar czf` is **deprecated** — use `tar -I 'gzip -9'` instead
+- `-z` (gzip) and `-j` (bzip2) work fine; just no level control
+- `tar` strips leading `/` from absolute paths by default (security feature)
+
+### Standalone compression
+
+```bash
+gzip file                            # Compress → file.gz (removes original)
+gzip -k file                         # Keep original
+gzip -9 file                         # Best compression (--best)
+gzip -1 file                         # Fastest (--fast)
+gzip -d file.gz                      # Decompress
+gunzip file.gz                       # Same as gzip -d
+gzip -l file.gz                      # Show compression ratio
+
+bzip2 / bunzip2                      # Same pattern, better ratio than gzip
+xz / unxz                            # Best ratio, slowest
+
+zip -r archive.zip dir/              # Create zip
+unzip archive.zip                    # Extract zip
+unzip -l archive.zip                 # List contents
+```
+
+---
+
+## File Permissions
+
+### Standard permissions
+
+```bash
+chmod 755 file                       # rwxr-xr-x (owner full, others read+exec)
+chmod 644 file                       # rw-r--r-- (owner rw, others read)
+chmod 600 file                       # rw------- (owner only) — SSH keys, secrets
+chmod 777 file                       # rwxrwxrwx (everyone full) — avoid
+
+chmod u+x script.sh                  # Add execute for owner
+chmod g-w file                       # Remove write from group
+chmod o+r file                       # Add read for others
+chmod a+x file                       # Add execute for all (a = ugo)
+chmod -R 750 dir/                    # Recursive
+
+# Octal:  4=read  2=write  1=execute  (sum per role)
+# Symbolic:  u=user  g=group  o=other  a=all
+#            +=add   -=remove  ==set exactly
+```
+
+### Special bits
+
+```bash
+chmod u+s file                       # SUID — run as owner
+chmod g+s file                       # SGID — run as group / inherit group on dir
+chmod +t dir                         # Sticky bit — only owner can delete (e.g. /tmp)
+
+chmod 4755 file                      # SUID + 755
+chmod 2755 dir                       # SGID + 755
+chmod 1777 dir                       # Sticky + 777
+
+# Find SUID files (security audit)
+find / -perm /4000 -type f 2>/dev/null
+```
+
+### Ownership
+
+```bash
+chown user file                      # Change owner
+chown user:group file                # Change owner and group
+chown :group file                    # Change group only
+chown -R user:group dir/             # Recursive
+
+chgrp group file                     # Change group only
+```
+
+### Default permissions (umask)
+
+```bash
+umask                                # Show current umask (typically 022)
+umask 027                            # New files: 640, new dirs: 750
+
+# Default file perms: 666 - umask
+# Default dir perms:  777 - umask
+```
+
+### Extended attributes
+
+```bash
+chattr +i file                       # Make immutable (cannot modify/delete)
+chattr -i file                       # Remove immutable
+chattr +a file                       # Append-only
+lsattr file                          # List attributes
+```
+
+---
 
 ## ACLs (Access Control Lists)
 
 ```bash
-getfacl archive                                          # List ACL permissions on file
-setfacl --modify user:john:rw specialfile                # Grant user john rw on file
-setfacl --modify group:mail:rx specialfile               # Grant group mail rx on file
-setfacl --remove user:john specialfile                   # Remove ACL for user john
-setfacl --recursive --modify user:john:rwx collection/   # Recursive ACL on directory
+getfacl file                         # Show ACL entries
+setfacl -m u:john:rw file            # Grant john read+write
+setfacl -m g:dev:rx file             # Grant group dev read+execute
+setfacl -x u:john file               # Remove user entry
+setfacl -b file                      # Remove all ACLs
+setfacl -R -m u:john:rwx dir/        # Recursive
+
+# Default ACLs (inherited by new files in dir)
+setfacl -d -m u:john:rwx dir/
 ```
 
-## SSL / Certificates
+**Note:** Filesystem must be mounted with `acl` option (default on most modern FS).
 
-```bash
-openssl req -newkey rsa:4096 -keyout priv.key -out cert.csr
-# Generate a 4096-bit RSA key and a Certificate Signing Request (CSR)
-
-openssl x509 -in my.crt -text     # Inspect cert — identify CN, validity, issuer
-```
+---
 
 ## Help & Documentation
 
 ```bash
-man command                 # Display manual page for command
-man -k keyword              # Search man pages by keyword (= apropos)
-apropos "NFS mounts"        # Search manual page names and descriptions
-command --help              # Quick inline help
-whatis command              # One-line description of a command
-info command                # GNU info documentation
+man command                          # Full manual page
+man 5 passwd                         # Specific section (5 = file formats)
+man -k keyword                       # Search by keyword in descriptions
+apropos keyword                      # Same as man -k
+whatis command                       # One-line description
+
+command --help                       # Quick help (faster than man)
+command -h                           # Short alias
+
+info command                         # GNU info pages (more detailed)
+
+# Inside man / less:
+# /pattern    search forward
+# ?pattern    search backward
+# n           next match
+# N           previous match
+# q           quit
 ```
+
+**Exam reflex:** When stuck on a command, try in order:
+1. `command --help`
+2. `man -k keyword`
+3. `man command` + `/option`
+
+### Man sections
+
+| Section | Content |
+|---|---|
+| 1 | User commands |
+| 2 | System calls |
+| 3 | Library functions |
+| 4 | Special files (`/dev/*`) |
+| 5 | File formats (`/etc/passwd`, `crontab`) |
+| 7 | Miscellaneous |
+| 8 | Admin commands |
+
+---
 
 ## Editor Essentials (vi / vim)
 
 ```bash
-vi file                     # Open file in vi/vim
-# Modes:  i = insert    Esc = normal    : = command-line
-# Save/quit:  :w  save  |  :q  quit  |  :wq  save+quit  |  :q!  force quit
-# Editing:    dd delete line | yy copy line | p paste | u undo
-# Search:     /pattern  forward  |  ?pattern  backward  |  n next | N prev
+vi file
 ```
 
-## Git (Version Control)
+| Mode | Switch with | Purpose |
+|---|---|---|
+| Normal | `Esc` | Navigation, commands |
+| Insert | `i` `a` `o` | Type text |
+| Command | `:` | Save, quit, search-replace |
 
-```bash
-git init                              # Initialize repository
-git clone "repository"                # Clone the repo
-git add *.cpp                         # Stage all .cpp files for next commit
-git commit -m "Message"               # Commit staged files with message
-git status                            # Show working tree status
-git log --raw                         # Show files modified in latest commits
-git branch testing                    # Create branch named testing
-git checkout master                   # Switch to master branch
-git branch --delete testing           # Delete the testing branch
-git merge "branch name"               # Merge branch into current branch
-git pull origin master                # Pull latest commits from remote
-git push origin master                # Push commits to master branch on remote
+**Essential commands:**
+```
+:w           save
+:q           quit
+:wq          save + quit
+:q!          force quit (discard changes)
+:set nu      show line numbers
+/pattern     search forward
+?pattern     search backward
+n / N        next / previous match
+:%s/old/new/g    replace all in file
+dd           delete line
+yy           copy line
+p            paste
+u            undo
+Ctrl+R       redo
+gg           top of file
+G            bottom of file
 ```
 
-## SSH & Remote Access
+---
+
+## Pitfalls Summary
 
 ```bash
-ssh -V                            # Display the SSH client version
-ssh user@host                     # Connect to host as user
-ssh -p <port> user@host           # Connect on a custom port
-ssh -v alex@localhost             # Verbose mode — debug failing connections
-ssh-copy-id user@host             # Push public key to host for passwordless login
-
-scp file user@host:/path/         # Copy file to remote host
-scp -r dir/ user@host:/path/      # Copy directory recursively
-scp user@host:/file ./            # Copy file from remote to local
-
-rsync -avzh source/ dest/         # Local sync, archive + compress + human readable
-rsync <file> user@host:<dest>     # Copy file to remote (e.g. admin@192.0.0.0:/config)
-rsync -avruz user@host:src dest   # Copy directory recursively from remote
-```
-
-## File Transfer (other)
-
-```bash
-wget file_url                # Download file
-wget -c file_url             # Continue a stopped download
-curl -fsSLo out.txt url      # Fetch URL silently and save (used in install scripts)
-curl url                     # Transfer data / fetch from server
-ftp host                     # Insecure file-transfer client
-telnet host                  # Connect to remote host (insecure — debugging only)
+# 1. find -delete — always test with listing first
+# 2. sed -i — always backup or use sed -i.bak
+# 3. tar -P — never use unless you specifically need absolute paths
+# 4. $? — capture immediately, every command overwrites it
+# 5. > vs >> — overwrite vs append, very different
+# 6. 2>&1 placement — must come AFTER stdout redirection
+# 7. chmod 777 — almost never the right answer
+# 8. rm -rf — verify pwd before running
+# 9. grep without -E — limited regex (no +, ?, |)
+# 10. cp without -a — loses permissions/timestamps/links
 ```

@@ -1,338 +1,652 @@
 # LFCS — Service Configuration (20%)
 
-## systemd — Service Lifecycle
+> Web servers (Apache/Nginx), SSH, NFS, Samba, mail/DNS/DB overview, logging, containers, build from source.
+
+---
+
+## systemd — Service Management Refresher
 
 ```bash
-systemctl start <service>            # Start a service now
-systemctl stop <service>             # Stop a running service
-systemctl restart <service>          # Stop + start
-systemctl reload <service>           # Reload config without restart (if supported)
-systemctl status <service>           # Detailed service status (active, PID, recent logs)
-
-systemctl enable <service>           # Enable service at boot
-systemctl disable <service>          # Disable service at boot
-systemctl enable --now <service>     # Enable + start in one command
-systemctl disable --now <service>    # Disable + stop in one command
-systemctl mask <service>             # Prevent service from being started (manually or by dep)
-systemctl unmask <service>           # Reverse mask
-
-systemctl is-active <service>        # Is service running? (active/inactive)
-systemctl is-enabled <service>       # Is service enabled at boot?
-systemctl is-failed <service>        # Has service failed?
+systemctl start <svc>                # Start now
+systemctl stop <svc>
+systemctl restart <svc>
+systemctl reload <svc>               # Config reload (if ExecReload= defined)
+systemctl status <svc>
+systemctl enable --now <svc>         # Enable + start
+systemctl disable --now <svc>        # Disable + stop
+systemctl is-active <svc>
+systemctl is-enabled <svc>
+systemctl daemon-reload              # MANDATORY after editing unit files
 ```
 
-## Listing Services & Units
+See `02_operation_running_systems.md` for full systemd reference.
 
-```bash
-systemctl list-units                       # All loaded units (current state)
-systemctl list-units --type=service        # All service units
-systemctl list-units --state=running       # All running units
-systemctl --state running                  # Same — short form (running)
-systemctl list-units --state=failed        # All failed units
-systemctl --state failed                   # Get all failing services
-systemctl list-unit-files                  # All installed units + enable state
-systemctl list-unit-files --type=service   # Services and their enable state
-
-# Legacy SysV (RHEL 5/6)
-service --status-all              # Status of every service
-chkconfig --list                  # Runlevel enable status (RHEL 5)
-chkconfig <name> on               # Enable service at boot (RHEL 5/6)
-chkconfig <name> off              # Disable
-```
-
-## Editing & Reloading Unit Files
-
-```bash
-systemctl cat <service>            # Show full unit file (incl. drop-ins / overrides)
-systemctl edit <service>           # Edit drop-in override (creates *.d/override.conf)
-systemctl edit --full <service>    # Edit the full unit file (avoid — package upgrade overwrites)
-
-systemctl daemon-reload            # MUST RUN after editing any unit file
-systemctl daemon-reexec            # Re-exec systemd itself (rarely needed)
-
-# Unit file locations (precedence top → bottom)
-/etc/systemd/system/               # Local admin overrides (highest)
-/run/systemd/system/               # Runtime
-/lib/systemd/system/               # Distribution defaults (Debian)
-/usr/lib/systemd/system/           # Distribution defaults (RHEL)
-```
-
-## Unit File Skeleton
-
-```ini
-[Unit]
-Description=My App
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple                              # simple | forking | oneshot | notify | dbus
-ExecStart=/usr/local/bin/myapp
-ExecReload=/bin/kill -HUP $MAINPID
-Restart=on-failure
-RestartSec=5
-User=myapp
-Group=myapp
-Environment="LOG_LEVEL=info"
-EnvironmentFile=/etc/myapp/env
-WorkingDirectory=/var/lib/myapp
-
-[Install]
-WantedBy=multi-user.target               # When `systemctl enable` is run
-```
-
-## systemd Timers (cron alternative)
-
-```bash
-systemctl list-timers --all                 # List all timers
-systemctl status <name>.timer               # Inspect one timer
-systemctl enable --now <name>.timer         # Enable + start a timer
-
-# Timer unit example: /etc/systemd/system/backup.timer
-# [Timer]
-# OnCalendar=*-*-* 02:30:00     # Daily 02:30
-# Persistent=true
-# Unit=backup.service
-#
-# [Install]
-# WantedBy=timers.target
-```
-
-## Logging & Diagnosis
-
-```bash
-journalctl                                  # All logs since first boot
-journalctl --boot 0                         # Logs from current boot
-journalctl -u nginx                         # Logs for specific unit
-journalctl -u nginx --since now -f          # Follow new logs for unit
-journalctl -u nginx --since "1 hour ago"    # Time-bounded
-journalctl -p err -b                        # Errors only since boot
-journalctl --vacuum-size=200M               # Trim journal disk usage
-```
-
-## Web Server — Apache (httpd / apache2)
-
-```bash
-sudo apt install apache2                    # Install on Debian/Ubuntu
-sudo yum install httpd                      # Install on RHEL/CentOS
-
-systemctl enable --now apache2              # Ubuntu
-systemctl enable --now httpd                # RHEL
-
-# Config
-/etc/apache2/                               # Debian/Ubuntu
-/etc/httpd/                                 # RHEL/CentOS
-apache2ctl configtest                       # Validate config (Debian)
-apachectl -t                                # Validate config (universal)
-a2ensite <site>     /  a2dissite <site>     # Enable/disable vhost (Debian)
-a2enmod <mod>       /  a2dismod <mod>       # Enable/disable module (Debian)
-```
+---
 
 ## Web Server — Nginx
 
-```bash
-sudo apt install nginx
-systemctl enable --now nginx
-nginx -t                                    # Test config syntax
-systemctl reload nginx                      # Apply config without dropping connections
+### Install & start
 
-# Config
-/etc/nginx/nginx.conf                       # Main config
-/etc/nginx/sites-available/                 # All vhosts (Debian)
-/etc/nginx/sites-enabled/                   # Enabled vhosts (symlinks)
-/etc/nginx/conf.d/                          # Drop-in configs
+```bash
+sudo apt install nginx               # Debian/Ubuntu
+sudo yum install nginx               # RHEL/CentOS
+
+systemctl enable --now nginx
+nginx -t                             # Test config syntax (CRITICAL!)
+nginx -T                             # Show full effective config
+systemctl reload nginx               # Apply config without dropping connections
 ```
+
+### Config layout
+
+```
+/etc/nginx/nginx.conf                # Main config
+/etc/nginx/sites-available/          # All vhosts (Debian)
+/etc/nginx/sites-enabled/            # Enabled vhosts (symlinks)
+/etc/nginx/conf.d/                   # Drop-in configs (RHEL & generic)
+/var/log/nginx/access.log
+/var/log/nginx/error.log
+```
+
+### Enable / disable a site (Debian style)
+
+```bash
+ln -s /etc/nginx/sites-available/mysite /etc/nginx/sites-enabled/    # Enable
+rm /etc/nginx/sites-enabled/mysite                                   # Disable
+nginx -t && systemctl reload nginx                                   # Apply
+```
+
+### Basic vhost
+
+```nginx
+server {
+    listen 80;
+    listen [::]:80;
+    server_name example.com www.example.com;
+
+    root /var/www/example.com;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    access_log /var/log/nginx/example.access.log;
+    error_log  /var/log/nginx/example.error.log;
+}
+```
+
+### Reverse Proxy (single backend)
+
+```nginx
+server {
+    listen 8001;
+
+    location / {
+        proxy_pass http://192.168.10.60:2222/special;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+`proxy_pass URL` = forward incoming requests to URL.
+
+### Load Balancer (multiple backends)
+
+```nginx
+upstream backend {
+    # Default: Round Robin
+    server 192.168.10.60:1111;
+    server 192.168.10.60:2222;
+
+    # Variants:
+    # least_conn;                     # Send to least busy
+    # ip_hash;                        # Sticky sessions by client IP
+    # server x weight=3;              # Weighted distribution
+    # server x backup;                # Only used if others down
+}
+
+server {
+    listen 8000;
+
+    location / {
+        proxy_pass http://backend;     # MUST match upstream name
+    }
+}
+```
+
+**Pitfall:** `backend` is YOUR chosen upstream name. Both `upstream <name>` and `proxy_pass http://<name>` must match exactly.
+
+### Critical reflex
+
+```bash
+nginx -t && systemctl reload nginx
+# Always test BEFORE applying. Bad config + restart = service down.
+```
+
+---
+
+## Web Server — Apache (httpd / apache2)
+
+### Install & start
+
+```bash
+sudo apt install apache2             # Debian/Ubuntu
+sudo yum install httpd               # RHEL/CentOS
+
+systemctl enable --now apache2       # Ubuntu
+systemctl enable --now httpd         # RHEL
+
+apachectl -t                         # Test config (universal)
+apache2ctl configtest                # Same (Debian)
+apachectl -S                         # Show vhost config
+
+systemctl reload apache2             # or httpd
+```
+
+### Config layout
+
+```
+# Debian/Ubuntu
+/etc/apache2/apache2.conf
+/etc/apache2/sites-available/
+/etc/apache2/sites-enabled/
+/etc/apache2/mods-available/
+/etc/apache2/mods-enabled/
+
+# RHEL/CentOS
+/etc/httpd/conf/httpd.conf
+/etc/httpd/conf.d/
+/etc/httpd/conf.modules.d/
+```
+
+### Site / module management (Debian)
+
+```bash
+a2ensite mysite                      # Enable a vhost
+a2dissite mysite                     # Disable a vhost
+a2enmod ssl                          # Enable a module
+a2dismod ssl                         # Disable a module
+systemctl reload apache2
+```
+
+### Basic vhost
+
+```apache
+<VirtualHost *:80>
+    ServerName example.com
+    DocumentRoot /var/www/example.com
+
+    <Directory /var/www/example.com>
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/example_error.log
+    CustomLog ${APACHE_LOG_DIR}/example_access.log combined
+</VirtualHost>
+```
+
+---
 
 ## SSH Server (sshd)
 
 ```bash
 systemctl enable --now sshd
-sshd -t                                     # Test sshd config
-systemctl reload sshd                       # Reload config without dropping sessions
-
-# Key options in /etc/ssh/sshd_config
-# Port 22
-# PermitRootLogin no
-# PasswordAuthentication no
-# PubkeyAuthentication yes
-# AllowUsers alice bob
+sshd -t                              # Test config
+sshd -T                              # Effective config
+sshd -T -C user=alice                # Effective for specific user
+systemctl reload sshd
 ```
 
-## File Sharing — NFS Server
+### Key settings (`/etc/ssh/sshd_config`)
 
-```bash
-sudo apt install nfs-kernel-server          # Debian/Ubuntu
-sudo yum install nfs-utils                  # RHEL/CentOS
+```
+Port 22
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+AllowUsers alice bob
+AllowGroups admins
+MaxAuthTries 3
+ClientAliveInterval 300
+ClientAliveCountMax 2
+X11Forwarding no
+Banner /etc/ssh/banner
 
-# /etc/exports format:
-# <directory>   <client>(<options>)
-# /srv/share    192.168.1.0/24(rw,sync,no_subtree_check)
-# /srv/public   *(ro,sync)
+# Match blocks ALWAYS at the END of the file (or in 99-*.conf drop-in)
+Match User alice
+    PasswordAuthentication yes
+    Banner /etc/ssh/banner
 
-exportfs -r                                 # Reexport /etc/exports configuration
-exportfs -a                                 # Export all
-exportfs -v                                 # List active exports
-showmount -e localhost                      # Show what we are exporting
-showmount -e <server>                       # Show what a remote NFS server exports
-
-systemctl enable --now nfs-server           # Start NFS server
+Match Group developers
+    AllowAgentForwarding yes
 ```
 
-### NFS Client
+### Drop-in configs
+
+```
+/etc/ssh/sshd_config.d/*.conf        # Loaded in lexical order
+# Use 99-*.conf for files containing Match blocks
+```
+
+**Critical pitfall:** Once a `Match` block starts, all following lines are part of it until another `Match` or end of file. Misplaced settings = unintended scope.
+
+---
+
+## NFS Server
 
 ```bash
-sudo apt install nfs-common                 # Debian/Ubuntu
-mount -t nfs server:/srv/share /mnt         # Mount NFS share
+sudo apt install nfs-kernel-server   # Debian/Ubuntu
+sudo yum install nfs-utils           # RHEL/CentOS
+
+systemctl enable --now nfs-server
+```
+
+### `/etc/exports` syntax
+
+```
+# Format:  <directory>  <client>(options)
+
+/srv/share     192.168.1.0/24(rw,sync,no_subtree_check)
+/srv/public    *(ro,sync)
+/srv/secure    host1(rw,sync,no_root_squash)
+/data          *.example.com(rw,sync)
+```
+
+### Common options
+
+| Option | Meaning |
+|---|---|
+| rw / ro | Read-write / read-only |
+| sync / async | Sync writes (safer) / async (faster) |
+| no_subtree_check | Recommended (avoids overhead) |
+| root_squash | Remote root → nobody (default, safer) |
+| no_root_squash | Remote root keeps root powers (dangerous) |
+| all_squash | Map all users to nobody |
+
+### Apply changes
+
+```bash
+exportfs -ra                         # Re-export everything
+exportfs -a                          # Export all
+exportfs -v                          # List active exports
+exportfs -u 192.168.1.0/24:/srv/share    # Unexport specific
+showmount -e localhost               # Show what we export
+showmount -e <server>                # Show what server exports
+```
+
+**Pitfall:** After modifying `/etc/exports`, run `exportfs -ra`, NOT `systemctl restart nfs`.
+
+### Client side
+
+```bash
+sudo apt install nfs-common          # Debian/Ubuntu
+mkdir /mnt/share
+mount -t nfs server:/srv/share /mnt/share
+
+# Test before mounting
+nc -zv server 2049
+
 # Persistent in /etc/fstab:
-# server:/srv/share  /mnt/share  nfs  defaults  0  0
+# server:/srv/share  /mnt/share  nfs  defaults,_netdev  0  0
 ```
+
+---
 
 ## File Sharing — Samba (SMB/CIFS)
 
 ```bash
-sudo apt install samba                      # Install Samba
-systemctl enable --now smbd nmbd            # Start services
-
-# Config: /etc/samba/smb.conf
-# [share]
-#   path = /srv/share
-#   read only = no
-#   valid users = alice bob
-
-testparm                                    # Validate smb.conf
-smbpasswd -a alice                          # Add Samba user
-smbclient -L //server -U alice              # List shares on server
-mount -t cifs //server/share /mnt -o user=alice
+sudo apt install samba
+systemctl enable --now smbd nmbd
 ```
 
-## Mail / DNS / Database (overview)
+### Config (`/etc/samba/smb.conf`)
+
+```ini
+[global]
+    workgroup = WORKGROUP
+    server string = Samba Server
+
+[share]
+    path = /srv/share
+    read only = no
+    valid users = alice bob
+    create mask = 0664
+    directory mask = 0775
+```
+
+### Manage users / verify
 
 ```bash
-# Mail (overview only)
-systemctl status postfix
-mail user                                   # Send mail interactively
-mail -s "subject" user < body.txt           # Send with subject
+testparm                             # Validate smb.conf
+smbpasswd -a alice                   # Add Samba user (must already exist as Linux user)
+smbpasswd -x alice                   # Delete Samba user
+pdbedit -L                           # List Samba users
 
-# DNS server (BIND)
-systemctl enable --now named                # RHEL: named  | Debian: bind9
-named-checkconf                             # Validate config
-named-checkzone <zone> <file>               # Validate zone file
-
-# MariaDB / MySQL
-systemctl enable --now mariadb
-mysql_secure_installation                   # Initial hardening
-mysql -u root -p                            # Open client
+systemctl reload smbd
 ```
 
-## Logging Service (rsyslog)
+### Client
+
+```bash
+smbclient -L //server -U alice       # List shares
+smbclient //server/share -U alice    # Interactive
+mount -t cifs //server/share /mnt -o user=alice,password=pwd
+mount -t cifs //server/share /mnt -o credentials=/root/smb.creds
+
+# /root/smb.creds:
+# username=alice
+# password=secret
+```
+
+---
+
+## DNS Server (BIND)
+
+```bash
+# Install
+sudo apt install bind9 bind9utils    # Debian
+sudo yum install bind                # RHEL
+
+# Service
+systemctl enable --now named         # RHEL: named
+systemctl enable --now bind9         # Debian: bind9
+
+# Validate
+named-checkconf                      # Main config
+named-checkzone example.com /var/named/example.com.zone
+
+# Config locations
+/etc/named.conf                      # RHEL
+/etc/bind/named.conf                 # Debian
+/var/named/                          # RHEL zones
+/var/lib/bind/                       # Debian zones
+```
+
+---
+
+## Mail (overview)
+
+```bash
+systemctl status postfix
+mail user                            # Send mail interactively
+mail -s "subject" user < body.txt    # Send with subject
+
+# Queue
+mailq                                # Show queue
+postqueue -p                         # Same
+postqueue -f                         # Flush queue
+postsuper -d ALL                     # Delete all queued mail
+```
+
+---
+
+## Database (MariaDB / MySQL — overview)
+
+```bash
+systemctl enable --now mariadb       # or mysql
+mysql_secure_installation            # Initial hardening
+mysql -u root -p                     # Open client
+
+# Inside mysql shell:
+# CREATE DATABASE mydb;
+# CREATE USER 'user'@'localhost' IDENTIFIED BY 'pwd';
+# GRANT ALL ON mydb.* TO 'user'@'localhost';
+# FLUSH PRIVILEGES;
+```
+
+---
+
+## Logging Service — rsyslog
 
 ```bash
 systemctl status rsyslog
 # Config: /etc/rsyslog.conf  +  /etc/rsyslog.d/*.conf
-
-# Common selectors in rsyslog.conf:
-# *.info;mail.none;authpriv.none;cron.none    /var/log/messages
-# authpriv.*                                  /var/log/secure
-# mail.*                                      -/var/log/maillog
-# cron.*                                      /var/log/cron
 ```
 
-## Auditd (security auditing)
+### Common selectors
+
+```
+*.info;mail.none;authpriv.none;cron.none    /var/log/messages
+authpriv.*                                  /var/log/secure
+mail.*                                      -/var/log/maillog
+cron.*                                      /var/log/cron
+*.emerg                                     :omusrmsg:*
+```
+
+### Remote logging
+
+```
+# Sender side
+*.* @192.168.1.10:514                       # UDP
+*.* @@192.168.1.10:514                      # TCP
+
+# Receiver side (uncomment in rsyslog.conf)
+# module(load="imudp")
+# input(type="imudp" port="514")
+```
+
+---
+
+## auditd (Security Auditing)
 
 ```bash
 systemctl enable --now auditd
-auditctl -l                                 # List active audit rules
-auditctl -w /etc/passwd -p wa -k passwd-watch    # Watch for writes/attribute changes
-ausearch -k passwd-watch                    # Search by key
-aureport --summary                          # Audit summary report
-# Module entries:
-#   add audit=1 to kernel cmdline
-#   /etc/audit/auditd.conf
-#   /etc/audit/audit.rules
-#   /etc/pam.d/system-auth → enable pam_tty_audit
+
+auditctl -l                          # List active rules
+auditctl -w /etc/passwd -p wa -k passwd-watch   # Watch writes/attribute changes
+auditctl -w /etc/shadow -p rwa -k shadow-watch
+auditctl -D                          # Delete all rules
+
+ausearch -k passwd-watch             # Search by key
+ausearch -m AVC -ts recent           # Recent SELinux denials
+ausearch -ua alice                   # By user
+
+aureport --summary                   # Summary
+aureport -au                         # Authentication report
+aureport -f                          # File access report
+
+# Persistent rules
+/etc/audit/audit.rules
+/etc/audit/auditd.conf
 ```
 
-## Container & Virtualization Services (overview)
+---
+
+## Container & Virtualization
+
+### Docker
 
 ```bash
-# Docker
 systemctl enable --now docker
-docker ps -a                                # All containers
-docker images                               # Images
-docker logs <container>                     # Container logs
 
-# Podman (RHEL preferred)
+docker ps                            # Running containers
+docker ps -a                         # All containers
+docker images                        # Images
+docker logs <container>              # Logs
+docker logs -f <container>           # Follow logs
+docker exec -it <container> bash     # Shell into container
+docker inspect <container>           # Full JSON info
+
+# Run
+docker run -d --name web nginx:alpine
+docker run -d --name web -p 8080:80 nginx:alpine            # Port mapping
+docker run -d --name web --memory 30m nginx:alpine          # Memory limit
+docker run -d --name web -v /data:/srv nginx:alpine         # Volume mount
+docker run --rm -it ubuntu bash                              # Interactive, auto-remove
+
+docker stop <container>
+docker start <container>
+docker rm <container>                # Remove stopped
+docker rm -f <container>             # Force remove running
+docker rmi <image>                   # Remove image
+```
+
+### Podman (RHEL preferred)
+
+```bash
 podman ps -a
 podman images
-
-# libvirt / KVM
-systemctl enable --now libvirtd
-virsh list --all                            # All VMs
-virsh start <vm>  /  virsh shutdown <vm>
-
-# LXD / LXC containers (Ubuntu)
-lxd init
-lxc launch ubuntu:18.04 <container_name>
-lxc launch images/centos/8/amd64 <container_name>
-lxc exec <name> bash                        # Shell inside container
-lxc file push <file> <container>:/<path>    # Push file into container
-lxc file pull <container>:/<file> <dest>    # Pull file from container
-lxc launch images:ubuntu/20.04 <vm_name> --vm    # Launch as full VM
-
-# Multipass (Ubuntu VMs)
-sudo snap install multipass
-multipass launch <image> --name <vm>        # Launch VM (omit image = latest LTS)
-multipass find                              # List available images
-multipass list                              # List existing VMs
-multipass shell <vm>                        # Shell inside VM
-
-# Kubernetes — MicroK8s (Ubuntu)
-sudo snap install microk8s --classic
-microk8s.status --wait-ready
-microk8s enable <addon>                     # Enable add-ons (dns, ingress...)
-microk8s.kubectl get nodes
-microk8s.kubectl get services
+podman run ...                       # Same syntax as docker
 ```
+
+### libvirt / KVM
+
+```bash
+systemctl enable --now libvirtd
+virsh list --all                     # All VMs
+virsh start <vm>
+virsh shutdown <vm>
+virsh destroy <vm>                   # Force stop
+virsh autostart <vm>
+```
+
+### LXD / LXC (Ubuntu)
+
+```bash
+lxd init                             # First-time setup
+lxc launch ubuntu:22.04 mycontainer
+lxc list
+lxc exec mycontainer bash            # Shell inside
+lxc file push file.txt mycontainer/path/
+lxc file pull mycontainer/path/file.txt ./
+lxc stop mycontainer
+lxc delete mycontainer
+
+# Launch as VM (not container)
+lxc launch images:ubuntu/22.04 myvm --vm
+```
+
+### Multipass (Ubuntu VMs)
+
+```bash
+sudo snap install multipass
+multipass launch --name myvm
+multipass list
+multipass shell myvm
+multipass stop myvm
+multipass delete myvm
+multipass purge                      # Permanently remove deleted VMs
+```
+
+### Kubernetes — MicroK8s (Ubuntu)
+
+```bash
+sudo snap install microk8s --classic
+microk8s status --wait-ready
+microk8s enable dns ingress storage
+microk8s kubectl get nodes
+microk8s kubectl get pods -A
+```
+
+---
+
+## Build & Install from Source
+
+Standard process:
+
+```bash
+# 1. Extract
+tar xjf links-2.14.tar.bz2
+cd links-2.14
+
+# 2. Configure (see all options)
+./configure --help
+./configure --prefix=/usr --without-ipv6
+# --prefix    install location (binary → $prefix/bin)
+# --enable-X  / --disable-X
+# --with-X    / --without-X
+
+# 3. Compile
+make
+make -j$(nproc)                      # Parallel build (faster)
+
+# 4. Install (often needs root)
+sudo make install
+
+# 5. Verify
+which mybinary
+mybinary --version
+```
+
+**Pitfall:** Without `--prefix`, default install location is usually `/usr/local/`. Use `--prefix=/usr` to install in `/usr/bin` instead.
+
+---
 
 ## SELinux Service Contexts
 
 ```bash
-ls -Z /var/www/html/                                # Show SELinux labels
-ps -eZ | grep nginx                                 # Show context of running service
-chcon -t httpd_sys_content_t /var/index.html       # Temporary label change
-restorecon -R /var/www/html/                        # Restore default labels (recursive)
-semanage fcontext -a -t httpd_sys_content_t '/web(/.*)?'   # Persistent rule
-semanage port -a -t http_port_t -p tcp 8080         # Allow Apache to bind port 8080
-getsebool -a | grep httpd                           # SELinux booleans for Apache
-setsebool -P httpd_can_network_connect on           # Persistent boolean change
+ls -Z /var/www/html/                          # SELinux labels on files
+ps -eZ | grep nginx                           # Process contexts
+
+chcon -t httpd_sys_content_t /var/web/index.html       # Temporary label
+restorecon -R /var/web/                                 # Restore default labels
+
+semanage fcontext -a -t httpd_sys_content_t '/web(/.*)?'    # Persistent rule
+restorecon -Rv /web/                                          # Apply
+
+semanage port -a -t http_port_t -p tcp 8080                 # Allow Apache on 8080
+semanage port -l | grep http                                # List HTTP ports
+
+getsebool -a | grep httpd                                   # Booleans for httpd
+setsebool -P httpd_can_network_connect on                   # Persistent boolean
 ```
 
-## Common Pitfalls (Pièges LFCS)
+---
+
+## Service Configuration Quick Verify
 
 ```bash
-# 1. After editing ANY unit file → systemctl daemon-reload
-#    Otherwise systemd uses the cached old version.
+# 1. Service running?
+systemctl status <svc>
 
-# 2. systemctl edit <svc>  creates an OVERRIDE in /etc/systemd/system/<svc>.d/.
-#    DO NOT use --full unless you understand it gets overwritten on package upgrade.
+# 2. Listening on expected port?
+ss -tulpn | grep <port>
 
-# 3. systemctl enable ≠ start. Enable = at boot. Start = now.
-#    Use `enable --now` to do both.
+# 3. Firewall allowing?
+ufw status               # or firewall-cmd --list-all
 
-# 4. systemctl mask <svc> creates a symlink to /dev/null — service CANNOT start
-#    (even by dependency). Forgot why a service won't start? Check `is-enabled` for "masked".
+# 4. Config syntax valid?
+nginx -t                 # Nginx
+apachectl -t             # Apache
+sshd -t                  # SSH
+testparm                 # Samba
+named-checkconf          # BIND
 
-# 5. systemctl reload only works if the unit defines ExecReload=.
-#    Otherwise use restart.
+# 5. Logs?
+journalctl -u <svc> -f
+tail -f /var/log/<svc>/error.log
+```
 
-# 6. After modifying /etc/exports → `exportfs -r` (NOT systemctl restart nfs).
+---
 
-# 7. SELinux blocks services silently. Check /var/log/audit/audit.log + ausearch
-#    when a service starts but can't read/write its files.
+## Pitfalls Summary
 
-# 8. Apache / Nginx config errors: ALWAYS validate before reload
-#    `apachectl -t` and `nginx -t` — bad config + restart = service down.
+```bash
+# 1. ALWAYS test config before reload/restart:
+#    nginx -t   apachectl -t   sshd -t   testparm   named-checkconf
 
-# 9. Don't forget: ufw / firewalld may block your service even if it runs.
-#    Test with `ss -tulpn` (running + listening) AND firewall.
+# 2. After editing systemd unit:  systemctl daemon-reload
+
+# 3. systemctl edit creates a drop-in override.
+#    --full edits the full unit (lost on package upgrade!).
+
+# 4. mask = symlink to /dev/null. Service can't start.
+
+# 5. reload only works if ExecReload= is defined; otherwise restart.
+
+# 6. After /etc/exports change → exportfs -ra (NOT systemctl restart).
+
+# 7. SELinux can silently block services.
+#    Check /var/log/audit/audit.log + ausearch -m AVC -ts recent.
+
+# 8. Match blocks in sshd_config must be at END (or 99-*.conf).
+
+# 9. Don't forget firewall — service runs but port is blocked.
+#    Test with ss -tulpn (running) AND ufw/firewall-cmd.
+
+# 10. Build from source: --prefix=/usr puts binary in /usr/bin.
+#     Without --prefix, default is /usr/local/bin.
 ```
