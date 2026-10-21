@@ -19,7 +19,7 @@ cd devops_cheat_sheets
 
 ## 📊 Collection Stats
 
-> 📝 **25 Markdown files** · 🗂 **21 directories**
+> 📝 **30 Markdown files** · 🗂 **26 directories**
 
 ---
 
@@ -42,6 +42,15 @@ cd devops_cheat_sheets
 
 ---
 
+### ☁️ **Cloud**
+
+| Tool | File | Description |
+|------|------|-------------|
+| Azure CLI | [azure/azure-cheatsheet.md](./azure/azure-cheatsheet.md) | Microsoft Azure: login, resource groups, VMs, networking, storage, RBAC, Bicep/ARM, troubleshooting |
+| AWS CLI | [aws/aws-cheatsheet.md](./aws/aws-cheatsheet.md) | Amazon Web Services: profiles/SSO, EC2, VPC, S3, IAM, CloudFormation, cost, Azure ↔ AWS mapping |
+
+---
+
 ### 🏗️ **Infrastructure & IaC**
 
 | Tool | File | Description |
@@ -61,6 +70,7 @@ cd devops_cheat_sheets
 | Systemd | [systemd/systemd-cheatsheet.md](./systemd/systemd-cheatsheet.md) | System manager: services, timers, targets, journals, unit files, socket activation |
 | Iptables / Nftables | [iptables/iptables-cheatsheet.md](./iptables/iptables-cheatsheet.md) | Linux firewalls: chains, rules, NAT, masquerade, state management, nftables migration |
 | SSH | [ssh/ssh-cheatsheet.md](./ssh/ssh-cheatsheet.md) | Secure shell: keys, connections, port forwarding, agent, hardening |
+| Tailscale | [tailscale/tailscale-cheatsheet.md](./tailscale/tailscale-cheatsheet.md) | Mesh VPN (WireGuard): connect, status, subnet router, exit node, Tailscale SSH, Proxmox LXC |
 
 ---
 
@@ -73,7 +83,9 @@ cd devops_cheat_sheets
 | Make | [make/make-cheatsheet.md](./make/make-cheatsheet.md) | Build automation: Makefiles, variables, targets, dependencies, pattern rules, recursive make |
 | Python | [python/python-cheatsheet.md](./python/python-cheatsheet.md) | Programming: data types, strings, collections, control flow, functions, file I/O, stdlib |
 | Regex | [regex/regex-cheatsheet.md](./regex/regex-cheatsheet.md) | Pattern matching: anchors, quantifiers, character classes, groups, lookahead/behind, usage in tools |
+| jq & JSONPath | [jq/jq-cheatsheet.md](./jq/jq-cheatsheet.md) | JSON queries: jq filters/transform, kubectl JSONPath, custom-columns, kubectl + jq, az/aws + jq |
 | Vim | [vim/vim-cheatsheet.md](./vim/vim-cheatsheet.md) | Text editor: modes, navigation, editing, search/replace, macros, splits |
+| VS Code | [vscode/vscode-cheatsheet.md](./vscode/vscode-cheatsheet.md) | Code editor (Linux): shortcuts, multi-cursor, CLI, config files, Remote-SSH, DevOps extensions |
 | Tmux | [tmux/tmux-cheatsheet.md](./tmux/tmux-cheatsheet.md) | Terminal multiplexer: sessions, windows, panes, copy mode, config |
 | Tools | [tools/tools-cheatsheet.md](./tools/tools-cheatsheet.md) | Essential CLI: curl, wget, jq, rsync, netcat, nmap, htop, strace, lsof, fzf |
 
@@ -101,12 +113,15 @@ cd devops_cheat_sheets
 ```
 devops_cheat_sheets/
 ├── ansible/              - Infrastructure automation (Markdown & PDF)
+├── aws/                  - Amazon Web Services CLI
+├── azure/                - Microsoft Azure CLI
 ├── bash/                 - Shell scripting and command-line
 ├── docker/               - Container management (Markdown, PDF & CLI)
 ├── git/                  - Version control system
 ├── helm/                 - Kubernetes Helm package manager
 ├── incus/                - Container and VM management
 ├── iptables/             - Linux firewall and netfilter
+├── jq/                   - JSON queries (jq & kubectl JSONPath)
 ├── k8s/                  - Kubernetes orchestration (Markdown & PDF)
 ├── linux_cli/            - Linux system administration and CLI tools (10+ PDFs)
 ├── make/                 - Build automation and compilation
@@ -116,11 +131,13 @@ devops_cheat_sheets/
 ├── sql/                  - Database administration (Markdown & PDF)
 ├── ssh/                  - Secure Shell protocol
 ├── systemd/              - Linux system and service manager
+├── tailscale/            - Mesh VPN (WireGuard-based)
 ├── terraform/            - Infrastructure as Code provisioning
 ├── tmux/                 - Terminal multiplexer
 ├── tools/                - Essential command-line utilities
 ├── vagrant/              - Infrastructure provisioning
 ├── vim/                  - Text editor
+├── vscode/               - VS Code editor (Linux)
 ├── wsl/                  - Windows Subsystem for Linux & PowerShell
 └── README.md
 ```
@@ -168,5 +185,5 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ---
 
-**Last updated:** 2026-04-28  
+**Last updated:** 2026-10-16  
 **Maintainer:** [@PoissonChevre](https://github.com/PoissonChevre)
