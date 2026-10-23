@@ -68,7 +68,7 @@ aws ec2 authorize-security-group-ingress --group-id sg-xxxx --protocol tcp --por
 
 ```bash
 aws s3 ls  # List buckets
-aws s3 mb s3://renaud-lab-$RANDOM  # Create bucket (globally unique name)
+aws s3 mb s3://my-lab-$RANDOM  # Create bucket (globally unique name)
 aws s3 cp file.txt s3://bucket/  # Upload
 aws s3 cp s3://bucket/file.txt .  # Download
 aws s3 sync ./site s3://bucket/site --delete  # Sync folder (mirror)

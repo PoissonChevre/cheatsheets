@@ -104,7 +104,7 @@ code --disable-extensions  # Start without extensions (debug)
 
 ```bash
 # Extension "Remote - SSH" → uses your ~/.ssh/config hosts
-code --remote ssh-remote+myserver /home/renaud/project  # Open remote folder from CLI
+code --remote ssh-remote+myserver /home/user/project  # Open remote folder from CLI
 ## Ctrl+Shift+P → "Remote-SSH: Connect to Host..."
 ## Extension "Dev Containers" → open a project inside a Docker container
 ```

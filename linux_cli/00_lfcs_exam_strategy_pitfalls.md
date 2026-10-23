@@ -281,5 +281,3 @@ find . -maxdepth 1 -size +10k -type f    # ✅ -maxdepth before other filters
 > You have CKA — you know how to work in a terminal under stress.
 > `man -k`, `--help`, `Tab` are your survival kit.
 > Don't aim for perfect. Aim for 66%.
-
-Good luck Renaud.

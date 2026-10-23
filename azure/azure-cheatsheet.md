@@ -41,7 +41,7 @@ az group delete -n labo-rg1 --yes --no-wait  # Delete RG and all its content
 
 ```bash
 az vm create -g labo-rg1 -n vm1 --image Ubuntu2404 --size Standard_D2als_v6 \
-  --admin-username renaud --generate-ssh-keys  # Create Linux VM
+  --admin-username azureuser --generate-ssh-keys  # Create Linux VM
 az vm list -d -o table  # List VMs with power state and IPs
 az vm start -g labo-rg1 -n vm1  # Start
 az vm deallocate -g labo-rg1 -n vm1  # Stop AND stop billing compute

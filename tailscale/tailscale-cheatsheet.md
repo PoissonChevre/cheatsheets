@@ -34,7 +34,7 @@ tailscale netcheck  # Check NAT / UDP / nearest relay
 **Good to know:**
 ```
 Tailnet IPs : 100.64.0.0/10 — stable per device
-MagicDNS    : reach devices by name → ssh renaud@srv-web01
+MagicDNS    : reach devices by name → ssh user@srv-web01
 ```
 
 ## Subnet Router & Exit Node
@@ -57,7 +57,7 @@ sudo tailscale set --exit-node=  # Stop using exit node
 
 ```bash
 sudo tailscale set --ssh  # Enable Tailscale SSH on this device
-ssh renaud@srv-web01  # Connect by name
+ssh user@srv-web01  # Connect by name
 tailscale file cp report.pdf srv-web01:  # Send a file (Taildrop)
 sudo tailscale file get ~/Downloads  # Receive files
 tailscale serve --bg 3000  # Share localhost:3000 over HTTPS (tailnet only)
