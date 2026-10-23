@@ -1,6 +1,9 @@
 # DevOps Cheat Sheets
 
-My personal cheat sheets for the DevOps, Linux and cloud tools I use, written while learning and kept up to date as I go. Each command comes with a short comment explaining what it does.
+My cheat sheets for the DevOps, Linux and cloud tools I use. I built them while
+preparing the CKA and LFCS, drafting with an AI assistant (Claude) and keeping
+only commands I have tested and use. They are updated as I go. Each command comes
+with a short comment explaining what it does.
 
 ## Containers and virtualisation
 
