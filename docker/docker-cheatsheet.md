@@ -46,6 +46,8 @@ docker rmi -f myapp:1.0          # Force delete
 
 ### Dockerfile — multi-stage build
 
+Simple template to start from: [templates/Dockerfile](./templates/Dockerfile).
+
 The first stage builds the app, the second keeps only what is needed. The final image is smaller.
 
 ```dockerfile
@@ -190,6 +192,8 @@ All network types (bridge, host, macvlan, ipvlan, overlay, none): see [docker-ne
 ---
 
 ## Docker Compose
+
+Template (web app + database): [templates/compose.yaml](./templates/compose.yaml).
 
 Describe a multi-container application in one YAML file (`compose.yaml`).
 

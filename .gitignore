@@ -20,3 +20,10 @@
 
 # Vagrant files
 !Vagrantfile
+
+# Template files
+!Dockerfile
+!.dockerignore
+!*.yaml
+!*.yml
+!*.example

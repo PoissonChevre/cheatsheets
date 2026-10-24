@@ -1,0 +1,29 @@
+# Web app + PostgreSQL database
+# Start: docker compose up -d
+# Stop:  docker compose down
+
+services:
+
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"     # Only reachable from this machine
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy   # Wait until the database is ready
+    restart: unless-stopped
+
+  db:
+    image: postgres:17
+    env_file: .env
+    volumes:
+      - db-data:/var/lib/postgresql/data   # Data survives "docker compose down"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "app"]
+      interval: 10s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  db-data:

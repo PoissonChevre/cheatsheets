@@ -1,0 +1,6 @@
+# Files Docker must NOT copy into the image
+.git
+.env
+*.log
+__pycache__/
+.venv/
