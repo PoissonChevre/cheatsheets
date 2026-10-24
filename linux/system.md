@@ -1,6 +1,6 @@
 # Running Systems
 
-System info, processes, boot, systemd, logs, resources, kernel, scheduling, packages, SELinux.
+System info, processes, shutdown, logs, resources, kernel, scheduling, packages. Summaries of systemd, GRUB and SELinux with links to their full guides.
 
 [← Back to index](./README.md)
 
@@ -37,7 +37,7 @@ pidof nginx
 top ; htop               # Interactive
 ```
 
-Which process uses a file, a port or a mount point: `lsof` and `fuser`, see [tools.md](./tools.md#lsof).
+Which process uses a file, a port or a mount point: `lsof` and `fuser`, see [utilities.md](./utilities.md#lsof).
 
 ### Signals
 
@@ -93,111 +93,33 @@ shutdown -c              # Cancel
 reboot ; poweroff
 ```
 
-### Targets
+Default target, rescue and emergency: see [systemd.md](./systemd.md#targets).
+
+---
+
+## GRUB
+
+Full guide (config, kernel parameters, rescue modes, root password reset, boot troubleshooting): **[grub.md](./grub.md)**
 
 ```bash
-systemctl get-default
-systemctl set-default multi-user.target    # Text mode
-systemctl set-default graphical.target     # Desktop
-systemctl isolate rescue.target            # Switch now
-```
-
-| Target | Use |
-|---|---|
-| emergency.target | Read-only root, minimal shell |
-| rescue.target | Single user, basic services |
-| multi-user.target | Multi-user, no GUI |
-| graphical.target | Multi-user + GUI |
-
-### GRUB
-
-```bash
-update-grub                                  # Debian/Ubuntu: regenerate config
+cat /proc/cmdline                            # Parameters of the current boot
+update-grub                                  # Debian: apply /etc/default/grub
 grub2-mkconfig -o /boot/grub2/grub.cfg       # RHEL
 grubby --update-kernel=ALL --args="quiet"    # RHEL: change kernel parameters
-cat /proc/cmdline                            # Parameters of the current boot
 ```
-
-Rescue at boot: press `e` in GRUB, add `rd.break` (RHEL) or `init=/bin/bash` at the end of the `linux` line.
 
 ---
 
 ## systemd
 
+Full guide (unit files, dependencies, timers, sockets, targets, journal, troubleshooting): **[systemd.md](./systemd.md)**
+
 ```bash
-systemctl start|stop|restart|reload SVC
-systemctl status SVC
 systemctl enable --now SVC     # Enable at boot + start now
-systemctl disable --now SVC
-systemctl mask SVC             # Block every start, even by dependencies
-systemctl unmask SVC
-systemctl is-active|is-enabled|is-failed SVC
-
-systemctl list-units --type=service --state=running
-systemctl --failed
-systemctl list-unit-files --type=service
-
-systemctl cat SVC              # Unit + drop-ins
-systemctl edit SVC             # Create a drop-in override (recommended)
-systemctl edit --full SVC      # Edit the full unit
-systemctl daemon-reload        # REQUIRED after editing a unit file
-```
-
-### Unit file locations (highest priority first)
-
-```
-/etc/systemd/system/           # Your files and overrides
-/run/systemd/system/           # Runtime
-/usr/lib/systemd/system/       # Packages
-```
-
-### Unit template
-
-```ini
-# /etc/systemd/system/myapp.service
-[Unit]
-Description=My Application
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-ExecStart=/usr/local/bin/myapp
-ExecReload=/bin/kill -HUP $MAINPID
-Restart=on-failure
-RestartSec=5
-User=myapp
-Environment="LOG_LEVEL=info"
-EnvironmentFile=/etc/myapp/env
-WorkingDirectory=/var/lib/myapp
-
-[Install]
-WantedBy=multi-user.target
-```
-
-### Timers (cron alternative)
-
-```ini
-# /etc/systemd/system/backup.timer
-[Timer]
-OnCalendar=*-*-* 02:30:00     # Every day at 02:30
-Persistent=true               # Run later if the machine was off
-Unit=backup.service
-
-[Install]
-WantedBy=timers.target
-```
-
-```ini
-# /etc/systemd/system/backup.service
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/backup.sh
-```
-
-```bash
-systemctl enable --now backup.timer
-systemctl list-timers --all
+systemctl status SVC
+systemctl edit SVC             # Drop-in override
+systemctl daemon-reload        # After editing a unit file
+systemctl list-timers
 ```
 
 ---
@@ -205,19 +127,12 @@ systemctl list-timers --all
 ## Logs
 
 ```bash
-journalctl -e                  # Jump to the end
-journalctl -f                  # Follow
-journalctl -u nginx -f         # One service
-journalctl -b ; journalctl -b -1   # Current boot, previous boot
+journalctl -u SVC -e           # Logs of a service
 journalctl -p err -b           # Errors since boot
-journalctl --since "1 hour ago"
-journalctl --since "2026-01-01" --until "2026-01-02"
-journalctl _PID=1234 ; journalctl _UID=1000
-journalctl --disk-usage
-journalctl --vacuum-time=7d    # Keep 7 days (--vacuum-size=200M)
+journalctl -f                  # Follow
 ```
 
-Priorities: 0 emerg, 1 alert, 2 crit, 3 err, 4 warning, 5 notice, 6 info, 7 debug.
+All journalctl options and persistent journal: see [systemd.md](./systemd.md#journal-journalctl).
 
 | Debian/Ubuntu | RHEL | Content |
 |---|---|---|
@@ -358,25 +273,17 @@ rpm -V PKG               # Check package files
 
 ---
 
-## SELinux (RHEL)
+## SELinux
+
+Full guide (contexts, labels, ports, booleans, troubleshooting, scenarios): **[selinux.md](./selinux.md)**
 
 ```bash
 getenforce ; sestatus
-setenforce 0             # Permissive until reboot (1 = enforcing)
-# Persistent: SELINUX= in /etc/selinux/config
-
-ls -Z file ; ps -eZ      # Contexts
-restorecon -Rv /var/www/                                 # Restore default contexts
-semanage fcontext -a -t httpd_sys_content_t '/web(/.*)?' # Persistent rule...
-restorecon -Rv /web/                                     # ...then apply it
-chcon -t httpd_sys_content_t file                        # Temporary (lost on relabel)
-
-semanage port -l | grep http
-semanage port -a -t http_port_t -p tcp 8080              # Allow a new port
-getsebool -a | grep httpd
-setsebool -P httpd_can_network_connect on                # -P = persistent
-
-ausearch -m AVC -ts recent                               # Recent denials
+restorecon -Rv /path                                     # Fix labels
+semanage fcontext -a -t httpd_sys_content_t '/web(/.*)?' # Persistent label rule
+semanage port -a -t http_port_t -p tcp 8888              # Allow a port
+setsebool -P httpd_can_network_connect on                # Boolean
+ausearch -m AVC -ts recent                               # Denials
 ```
 
 ---
@@ -394,12 +301,8 @@ script /tmp/session.log  # Record a terminal session
 
 ## Pitfalls
 
-- After editing a unit file: `systemctl daemon-reload`.
-- `enable` ≠ `start`: use `enable --now`.
-- `mask` blocks even starts by dependencies: check `is-enabled` if a service won't start.
-- `reload` works only if the unit has `ExecReload=`; otherwise `restart`.
 - `/etc/crontab` needs a username, `crontab -e` does not.
 - cron has a minimal `PATH`: use absolute paths.
 - `kill -9` gives no chance to clean up.
 - After `modprobe`, add the module to `/etc/modules-load.d/` to keep it after reboot.
-- SELinux can block a service silently: check `ausearch -m AVC`.
+- systemd, GRUB and SELinux pitfalls: see [systemd.md](./systemd.md#pitfalls), [grub.md](./grub.md#pitfalls) and [selinux.md](./selinux.md#pitfalls).

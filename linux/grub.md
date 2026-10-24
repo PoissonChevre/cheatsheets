@@ -2,7 +2,7 @@
 
 Boot process, GRUB config, kernel parameters, kernels and initramfs, rescue modes, root password reset, boot troubleshooting.
 
-[← Back to index](./README.md) · Targets and systemd: [system.md](./system.md#systemd) · SELinux: [selinux.md](./selinux.md)
+[← Back to index](./README.md) · Targets and systemd: [systemd.md](./systemd.md#targets) · SELinux: [selinux.md](./selinux.md)
 
 ---
 

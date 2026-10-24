@@ -2,7 +2,7 @@
 
 Web servers, file sharing (NFS, Samba, SSHFS), DNS, mail, database, logging, audit, virtualization, build from source.
 
-[← Back to index](./README.md) · systemd and SELinux: [system.md](./system.md) · SSH: [networking.md](./networking.md#ssh)
+[← Back to index](./README.md) · systemd: [systemd.md](./systemd.md) · SELinux: [selinux.md](./selinux.md) · SSH: [networking.md](./networking.md#ssh)
 
 ---
 
@@ -289,7 +289,7 @@ Persistent rules: write them in `/etc/audit/rules.d/*.rules`, then `augenrules -
 
 ## Containers and VMs
 
-Docker: see the [Docker cheat sheet](../docker/README.md). Exam example:
+Docker: see the [Docker cheat sheet](../docker/docker-cheatsheet.md). Exam example:
 
 ```bash
 docker run -d --name web --memory 30m -p 1234:80 nginx:alpine
@@ -364,5 +364,5 @@ journalctl -u SVC -e             # 4. Logs?
 - Test the config before reload: a bad config + restart = service down.
 - `/etc/exports` changed → `exportfs -ra`, not a restart.
 - `upstream` name and `proxy_pass http://name` must match.
-- The service runs but nobody can connect: check the firewall and SELinux.
+- The service runs but nobody can connect: check the firewall and [SELinux](./selinux.md#troubleshooting).
 - `./configure` without `--prefix` installs in `/usr/local`.

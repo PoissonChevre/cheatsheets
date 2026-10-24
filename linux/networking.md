@@ -41,7 +41,7 @@ ss -s                            # Summary
 netstat -tulpn                   # Old equivalent
 ```
 
-Test a remote port: `nc -zv host 22`. More tools (nc, nmap, curl, lsof): see [tools.md](./tools.md).
+Test a remote port: `nc -zv host 22`. More tools (nc, nmap, curl, lsof): see [utilities.md](./utilities.md).
 
 ---
 
@@ -219,7 +219,7 @@ scp file user@host:/path/        # -r recursive, -P port (uppercase!)
 scp user@host:/file ./
 ```
 
-For rsync, see [tools.md](./tools.md#rsync).
+For rsync, see [utilities.md](./utilities.md#rsync).
 
 ### Server
 
@@ -264,7 +264,7 @@ nc -zv host PORT                 # 2. Can I reach it from outside?
 nft list ruleset                 # 3. Firewall? (or ufw status / firewall-cmd --list-all)
 dig name                         # 4. DNS?
 ip route get IP                  # 5. Route?
-ausearch -m AVC -ts recent       # 6. SELinux? (RHEL)
+ausearch -m AVC -ts recent       # 6. SELinux? (RHEL) — see selinux.md
 ```
 
 ---

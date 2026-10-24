@@ -9,9 +9,10 @@ with a short comment explaining what it does.
 
 | Tool | Cheat sheet | Covers |
 |------|-------------|--------|
-| Docker | [docker-cheatsheet.md](./docker/docker-cheatsheet.md) | Images, containers, volumes, networks, Compose, logs |
-| Kubernetes | [kubernetes-cheatsheet.md](./k8s/kubernetes-cheatsheet.md) | Contexts, pods, deployments, services, ConfigMaps, RBAC, scaling |
-| Helm | [helm-cheatsheet.md](./helm/helm-cheatsheet.md) | Repos, install/upgrade, rollback, values, templating |
+| Docker | [docker-cheatsheet.md](./docker/docker-cheatsheet.md) · [networking](./docker/docker-networking.md) | Images, containers, volumes, Compose, network drivers |
+| Kubernetes | [k8s/](./k8s/README.md) | kubectl, manifests, JSONPath, troubleshooting |
+| Helm | [helm.md](./k8s/helm.md) | Repos, install/upgrade, values, rollback, writing charts, OCI |
+| Kustomize | [kustomize.md](./k8s/kustomize.md) | Base and overlays, patches, generators, Helm vs Kustomize |
 | Incus | [incus-cheatsheet.md](./incus/incus-cheatsheet.md) | Instances, images, profiles, networking, storage, snapshots |
 | Proxmox VE | [proxmox-cheatsheet.md](./proxmox/proxmox-cheatsheet.md) | VMs, LXC containers, storage, networking, backup, cluster |
 | Vagrant | [vagrant-cheatsheet.md](./vagrant/vagrant-cheatsheet.md) | Vagrantfile, boxes, networking, provisioning |
@@ -35,9 +36,11 @@ with a short comment explaining what it does.
 
 | Tool | Cheat sheet | Covers |
 |------|-------------|--------|
-| LFCS notes | [linux_cli/](./linux_cli/) | The five LFCS domains, exam strategy, disks, firewall |
-| systemd | [systemd-cheatsheet.md](./systemd/systemd-cheatsheet.md) | Services, timers, targets, journal, unit files |
-| iptables / nftables | [iptables-cheatsheet.md](./iptables/iptables-cheatsheet.md) | Chains, rules, NAT, state, nftables migration |
+| Linux | [linux/](./linux/README.md) | Essentials, users, storage, networking, services, LFCS exam |
+| systemd | [systemd.md](./linux/systemd.md) | Services, unit files, timers, targets, journal |
+| GRUB and boot | [grub.md](./linux/grub.md) | Boot process, kernel parameters, rescue, root password reset |
+| SELinux | [selinux.md](./linux/selinux.md) | Contexts, labels, ports, booleans, troubleshooting |
+| Firewall | [firewall.md](./linux/firewall.md) · [iptables-nftables.md](./linux/iptables-nftables.md) | ufw, firewalld, iptables, nftables, NAT |
 | SSH | [ssh-cheatsheet.md](./ssh/ssh-cheatsheet.md) | Keys, port forwarding, agent, hardening |
 | Tailscale | [tailscale-cheatsheet.md](./tailscale/tailscale-cheatsheet.md) | Subnet router, exit node, Tailscale SSH |
 
@@ -50,19 +53,19 @@ with a short comment explaining what it does.
 | Git | [git-cheatsheet.md](./git/git-cheatsheet.md) | Branching, merging, remotes, history |
 | Make | [make-cheatsheet.md](./make/make-cheatsheet.md) | Targets, variables, dependencies, pattern rules |
 | Regex | [regex-cheatsheet.md](./regex/regex-cheatsheet.md) | Anchors, quantifiers, groups, lookarounds |
-| jq and JSONPath | [jq-cheatsheet.md](./jq/jq-cheatsheet.md) | jq filters, kubectl JSONPath, az/aws + jq |
+| jq and JSONPath | [utilities.md](./linux/utilities.md#jq) · [kubectl-jsonpath.md](./k8s/kubectl-jsonpath.md) | jq filters, kubectl JSONPath, az/aws + jq |
 | MySQL | [mysql-cheatsheet.md](./sql/mysql-cheatsheet.md) | DDL/DML, users, joins, indexes, backup |
 | Vim | [vim-cheatsheet.md](./vim/vim-cheatsheet.md) | Modes, navigation, search/replace, macros |
 | tmux | [tmux-cheatsheet.md](./tmux/tmux-cheatsheet.md) | Sessions, windows, panes, copy mode |
 | VS Code | [vscode-cheatsheet.md](./vscode/vscode-cheatsheet.md) | Shortcuts, multi-cursor, Remote-SSH |
-| CLI tools | [tools-cheatsheet.md](./tools/tools-cheatsheet.md) | curl, rsync, netcat, nmap, strace, lsof, fzf |
+| CLI tools | [utilities.md](./linux/utilities.md) | curl, wget, jq, rsync, netcat, nmap, strace, lsof, fzf |
 
 ## Windows
 
 | Tool | Cheat sheet | Covers |
 |------|-------------|--------|
 | WSL | [wsl-cheatsheet.md](./wsl/wsl-cheatsheet.md) | Distributions, file access, networking, interop |
-| PowerShell | [powershell-cheatsheet.md](./wsl/powershell-cheatsheet.md) | Variables, functions, files, processes |
+| PowerShell | [powershell-cheatsheet.md](./powershell/powershell-cheatsheet.md) | Variables, functions, files, processes |
 
 ## References
 

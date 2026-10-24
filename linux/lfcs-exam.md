@@ -58,8 +58,8 @@ Blocked more than 5 minutes? Skip and come back.
 | 4 | Always `visudo`, never edit `/etc/sudoers` directly | [users](./users.md#sudo) |
 | 5 | `/etc/crontab` needs a username, `crontab -e` does not | [system](./system.md#cron) |
 | 6 | `tar -I 'gzip -9'`, not `GZIP=-9` | [essentials](./essentials.md#archives-and-compression) |
-| 7 | iptables: ACCEPT before DROP, first match wins | [firewall](./firewall.md#iptables) |
-| 8 | REDIRECT = local port, DNAT = other machine | [firewall](./firewall.md#port-forwarding) |
+| 7 | iptables: ACCEPT before DROP, first match wins | [iptables](./iptables-nftables.md#allow-one-source-block-the-others) |
+| 8 | REDIRECT = local port, DNAT = other machine | [iptables](./iptables-nftables.md#nat) |
 | 9 | `ufw allow 22/tcp` BEFORE `ufw enable` | [firewall](./firewall.md#ufw-ubuntu) |
 | 10 | firewalld: `--permanent` then `--reload` | [firewall](./firewall.md#firewalld-rhel-fedora) |
 | 11 | `resize2fs DEVICE`, `xfs_growfs MOUNTPOINT` (or `lvextend -r`) | [storage](./storage.md#grow) |
@@ -67,8 +67,8 @@ Blocked more than 5 minutes? Skip and come back.
 | 13 | `fsck.xfs` does nothing → `xfs_repair` | [storage](./storage.md#check-and-repair-unmounted) |
 | 14 | `mount -a` after editing fstab | [storage](./storage.md#etcfstab) |
 | 15 | sshd `Match` blocks at the end of the file | [networking](./networking.md#server) |
-| 16 | `systemctl daemon-reload` after editing a unit | [system](./system.md#systemd) |
-| 17 | `enable` ≠ `start` → `enable --now` | [system](./system.md#systemd) |
+| 16 | `systemctl daemon-reload` after editing a unit | [systemd](./systemd.md) |
+| 17 | `enable` ≠ `start` → `enable --now` | [systemd](./systemd.md) |
 | 18 | `nginx -t` before reload (same: `sshd -t`, `apachectl -t`) | [services](./services.md#check-a-service) |
 | 19 | Save `$?` right away | [essentials](./essentials.md#exit-code) |
 | 20 | `find -maxdepth 1` to avoid recursion | [essentials](./essentials.md#find--by-name-size-date-owner) |

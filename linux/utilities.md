@@ -1,4 +1,4 @@
-# CLI tools
+# Utilities
 
 curl, wget, jq, rsync, netcat, nmap, lsof, strace, htop, fzf.
 
