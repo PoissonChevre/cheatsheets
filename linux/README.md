@@ -13,7 +13,7 @@ Linux system administration commands, organized by topic. Tested on Ubuntu and R
 | [firewall.md](./firewall.md) | ufw, firewalld, nftables, iptables, NAT, port forwarding | Networking |
 | [storage.md](./storage.md) | Partitions, filesystems, fstab, LVM, swap, RAID, quotas, LUKS | Storage |
 | [services.md](./services.md) | Nginx, Apache, NFS, Samba, BIND, rsyslog, auditd, VMs, build from source | Service Configuration |
-| [utilities.md](./utilities.md) | curl, wget, jq, rsync, nc, nmap, lsof, strace, htop, fzf | — |
+| [cli-tools.md](./cli-tools.md) | curl, wget, jq, rsync, nc, nmap, lsof, strace, htop, fzf | — |
 | [lfcs-exam.md](./lfcs-exam.md) | Exam method, checks, top 20 pitfalls, practice topics | — |
 
 Each topic file ends with a **Pitfalls** section.
