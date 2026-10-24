@@ -6,8 +6,6 @@ POSIX-compliant shell scripting language for Unix/Linux automation and command e
 
 ## Variables & Quoting
 
-Define and use variables with proper quoting.
-
 ```bash
 name="Alice"  # Variable assignment (no spaces around =)
 age=30  # Numbers (quotes optional)
@@ -47,8 +45,6 @@ echo $((2 + 3 * 4))  # Arithmetic: 14
 ---
 
 ## Conditionals
-
-If/else statements and test expressions.
 
 ```bash
 # if/elif/else
@@ -91,8 +87,6 @@ esac
 ---
 
 ## Loops
-
-Iterate with for, while, and until loops.
 
 ```bash
 # for loop - range
@@ -147,8 +141,6 @@ done
 
 ## Functions
 
-Define and call reusable functions.
-
 ```bash
 # Function definition
 function greet() {  # Function keyword optional
@@ -201,8 +193,6 @@ function print_args() {
 
 ## Arrays
 
-Create and manipulate arrays.
-
 ```bash
 # Array creation
 arr=(apple banana cherry)  # Indexed array
@@ -241,8 +231,6 @@ unset arr  # Unset entire array
 
 ## String Manipulation
 
-Transform and analyze strings.
-
 ```bash
 str="hello world"
 
@@ -279,8 +267,6 @@ echo $str | awk '{print $2}'  # Second word
 
 ## File Tests
 
-Test file properties and existence.
-
 ```bash
 # File existence and type
 [[ -e file.txt ]]  # File exists
@@ -312,8 +298,6 @@ fi
 ---
 
 ## Process & Job Control
-
-Manage background processes and jobs.
 
 ```bash
 # Background processes
@@ -348,8 +332,6 @@ killall process_name  # Kill by name
 ---
 
 ## Input/Output & Redirection
-
-Redirect and pipe command output.
 
 ```bash
 # Redirection
@@ -392,8 +374,6 @@ exec 3>&-  # Close descriptor 3
 ---
 
 ## Script Best Practices
-
-Write safe, maintainable shell scripts.
 
 ```bash
 #!/bin/bash  # Shebang: specify interpreter
@@ -440,3 +420,16 @@ set -o pipefail  # Error if any pipe fails
 trap 'echo "Error on line $LINENO"' ERR  # Run on error
 trap 'rm -f tempfile' EXIT  # Cleanup on exit
 ```
+
+---
+
+## Pitfalls
+
+- Quote your variables: `"$var"`. Without quotes, spaces split the value and `*` expands.
+- No spaces around `=` in assignments: `name=value`.
+- Spaces are required inside tests: `[[ -f "$file" ]]`, not `[[-f $file]]`.
+- Use `[[ ]]` in Bash scripts, `$( )` instead of backticks.
+- `for f in $(ls)` breaks on file names with spaces: use `for f in *`.
+- `$?` changes after every command: save it right away.
+- Start scripts with `#!/usr/bin/env bash` and `set -euo pipefail`, then `chmod +x`.
+- Check scripts with `shellcheck`.

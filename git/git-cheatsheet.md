@@ -1,10 +1,10 @@
-# Git Cheat Sheet
+# Git — Cheat Sheet
 
-Distributed version control system for tracking code changes
+Distributed version control system for tracking code changes.
+
+---
 
 ## Setup & Config
-
-Configure git identity and defaults
 
 ```bash
 git config --global user.name "Your Name"  # Set global username
@@ -16,8 +16,6 @@ git config --global alias.st status  # Create command alias
 
 ## Init & Clone
 
-Initialize or copy repositories
-
 ```bash
 git init  # Create new local repository
 git clone <url>  # Clone remote repository
@@ -27,8 +25,6 @@ git clone --branch <branch> <url>  # Clone specific branch
 ```
 
 ## Staging & Commits
-
-Stage changes and record snapshots
 
 ```bash
 git add <file>  # Stage specific file
@@ -44,8 +40,6 @@ git commit --amend  # Modify last commit (don't push after!)
 
 ## Branching
 
-Create and manage branches
-
 ```bash
 git branch  # List local branches
 git branch -a  # List all branches (local + remote)
@@ -60,8 +54,6 @@ git branch -v  # Show last commit per branch
 
 ## Merging & Rebase
 
-Integrate changes from different branches
-
 ```bash
 git merge <branch>  # Merge branch into current branch
 git merge --no-ff <branch>  # Merge with merge commit (preserves history)
@@ -73,8 +65,6 @@ git rebase --continue  # Continue after resolving conflicts
 ```
 
 ## Remotes
-
-Manage remote repository connections
 
 ```bash
 git remote  # List remote names
@@ -91,8 +81,6 @@ git fetch --all  # Fetch from all remotes
 
 ## Undoing
 
-Undo changes at various stages
-
 ```bash
 git restore <file>  # Discard changes in working directory
 git restore --staged <file>  # Unstage file
@@ -105,8 +93,6 @@ git clean -fd  # Remove untracked files and directories
 
 ## Stash
 
-Temporarily save work in progress
-
 ```bash
 git stash  # Save uncommitted changes
 git stash list  # Show all stashes
@@ -118,8 +104,6 @@ git stash drop stash@{0}  # Delete specific stash
 ```
 
 ## Log & Diff
-
-View history and changes
 
 ```bash
 git log  # Show commit history
@@ -136,8 +120,6 @@ git show <commit>  # Show specific commit details
 
 ## Tags
 
-Mark important points in history
-
 ```bash
 git tag  # List tags
 git tag <name>  # Create lightweight tag
@@ -150,8 +132,6 @@ git push origin --delete <tag>  # Delete remote tag
 
 ## Advanced
 
-Complex operations for experienced users
-
 ```bash
 git cherry-pick <commit>  # Apply specific commit to current branch
 git bisect start  # Begin binary search for problematic commit
@@ -162,3 +142,15 @@ git submodule update --init --recursive  # Initialize submodules
 git reflog  # Show reference changes (useful for recovery)
 git fsck --lost-found  # Find lost commits
 ```
+
+---
+
+## Pitfalls
+
+- Don't rewrite history that others already pulled (`rebase`, `commit --amend`, `push --force`). If you must: `push --force-with-lease`.
+- `git reset --hard` and `git checkout -- file` drop uncommitted work: `git stash` first. `git reflog` can save lost commits.
+- A secret committed once stays in the history: rotate it, then clean the history.
+- `.gitignore` doesn't affect files already tracked: `git rm --cached file`.
+- Check before committing: `git status`, `git diff --staged`.
+- Set `pull.rebase` (true or false) once, to avoid surprise merge commits.
+- Windows/WSL: set `core.autocrlf` to avoid CRLF/LF changes on every line.

@@ -1,10 +1,10 @@
-# Azure CLI Cheat Sheet
+# Azure CLI — Cheat Sheet
 
-*Manage Microsoft Azure resources from the terminal with the `az` command*
+Manage Microsoft Azure resources from the terminal with the `az` command.
+
+---
 
 ## Install & Login
-
-Install the CLI and select a subscription
 
 ```bash
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash  # Install on Debian/Ubuntu
@@ -18,20 +18,18 @@ az account show -o table  # Current subscription and tenant
 
 ## Defaults & Output
 
-Save typing and format results
-
 ```bash
 az config set defaults.location=belgiumcentral defaults.group=labo-rg1  # Default region and RG
 az vm list -o table  # Output as table (also: json, tsv, yaml)
 az vm list --query "[].{name:name, size:hardwareProfile.vmSize}" -o table  # Filter with JMESPath
 az vm show -n vm0 --query id -o tsv  # Get a single value (for scripts)
 az find "az vm create"  # Examples for a command
-## az interactive  # Shell with autocompletion
+az interactive  # Shell with autocompletion
 ```
 
 ## Resource Groups
 
-Containers for resources — deleting the group deletes everything inside
+A resource group contains resources. Deleting the group deletes everything inside.
 
 ```bash
 az group create -n labo-rg1 -l belgiumcentral  # Create RG
@@ -42,8 +40,6 @@ az group delete -n labo-rg1 --yes --no-wait  # Delete RG and all its content
 
 ## Virtual Machines
 
-Create, size and power-manage VMs
-
 ```bash
 az vm create -g labo-rg1 -n vm1 --image Ubuntu2404 --size Standard_D2als_v6 \
   --admin-username azureuser --generate-ssh-keys  # Create Linux VM
@@ -53,7 +49,6 @@ az vm deallocate -g labo-rg1 -n vm1  # Stop AND stop billing compute
 az vm resize -g labo-rg1 -n vm1 --size Standard_D4als_v6  # Change size
 az vm list-ip-addresses -g labo-rg1 -o table  # Public and private IPs
 az vm run-command invoke -g labo-rg1 -n vm1 --command-id RunShellScript --scripts "uptime"  # Run command without SSH
-## "az vm stop" keeps billing the VM → always use deallocate
 ```
 
 **Sizes, images and quotas:**
@@ -65,8 +60,6 @@ az vm image list-skus -l belgiumcentral -p MicrosoftWindowsDesktop -f windows-11
 ```
 
 ## Networking
-
-VNets, NSGs, public IPs
 
 ```bash
 az network vnet create -g labo-rg1 -n vnet1 --address-prefix 10.10.0.0/16 \
@@ -83,8 +76,6 @@ az network nic list-effective-nsg -g labo-rg1 -n vm1-nic  # Effective NSG rules
 
 ## Storage
 
-Accounts, blobs and SAS
-
 ```bash
 az storage account create -g labo-rg1 -n stlab$RANDOM --sku Standard_LRS  # Storage account (global unique name)
 az storage container create --account-name <sa> -n data --auth-mode login  # Blob container
@@ -92,12 +83,10 @@ az storage blob upload --account-name <sa> -c data -f file.txt --auth-mode login
 az storage blob list --account-name <sa> -c data -o table --auth-mode login  # List blobs
 az storage container generate-sas --account-name <sa> -n data --permissions rl \
   --expiry 2026-12-31 --as-user --auth-mode login  # Read/list SAS token (Entra-signed)
-## --auth-mode login uses your Entra identity → needs "Storage Blob Data Contributor" role
+# --auth-mode login uses your Entra identity → needs "Storage Blob Data Contributor" role
 ```
 
 ## Identity & Access
-
-Entra ID users and RBAC
 
 ```bash
 az ad user list --query "[].userPrincipalName" -o tsv  # List users
@@ -109,8 +98,6 @@ az vm identity assign -g labo-rg1 -n vm1  # Enable managed identity on VM
 ```
 
 ## Templates (ARM / Bicep)
-
-Infrastructure as Code
 
 ```bash
 az deployment group create -g labo-rg1 --template-file main.bicep  # Deploy Bicep or ARM JSON
@@ -124,8 +111,6 @@ az group export -n labo-rg1 > export.json  # Export existing resources as templa
 
 ## Monitoring & Cost
 
-Logs and spending
-
 ```bash
 az monitor activity-log list -g labo-rg1 --offset 1d -o table  # Who did what (last 24h)
 az consumption usage list --top 10 -o table  # Recent usage and cost
@@ -134,14 +119,26 @@ az lock create -n nodelete -g labo-rg1 --lock-type CanNotDelete  # Protect RG fr
 
 ## Troubleshooting
 
-Common errors
-
 ```bash
 # SkuNotAvailable → no capacity in region: try another size or region
 # QuotaExceeded   → vCPU quota reached: deallocate VMs or request increase
 # AuthorizationFailed → missing RBAC role on the scope
 az vm list --debug  # Full HTTP trace of a command
 ```
+
+---
+
+## Pitfalls
+
+- `az vm stop` keeps billing the compute: use `az vm deallocate`.
+- `az group delete` deletes **everything** in the group.
+- Check the subscription before changing things: `az account show`.
+- VM sizes and services are not available in every region.
+- New role assignments (RBAC) can take a few minutes to work.
+- Storage account names are global, lowercase, 3 to 24 letters and digits.
+- Prefer managed identities to secrets and keys in apps.
+
+---
 
 ## References
 

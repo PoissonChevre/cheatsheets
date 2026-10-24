@@ -1,8 +1,10 @@
-# Proxmox Cheat Sheet
-*Open-source virtualization platform for VMs and containers*
+# Proxmox — Cheat Sheet
+
+Open-source virtualization platform for VMs and containers.
+
+---
 
 ## VM Management
-*Create, manage, and control virtual machines*
 
 ```bash
 qm list  # List all VMs
@@ -23,7 +25,6 @@ qm disk list <vmid>  # List VM disks
 ```
 
 ## LXC Containers
-*Create and manage LXC containers*
 
 ```bash
 pct list  # List all containers
@@ -42,7 +43,6 @@ pct exec <ctid> -- command  # Execute command in container
 ```
 
 ## Storage
-*Manage storage pools and disks*
 
 ```bash
 pvesm list  # List storage
@@ -58,7 +58,6 @@ qm rescan  # Rescan storage
 ```
 
 ## Networking
-*Configure and manage virtual networks*
 
 ```bash
 ip a  # Show network interfaces
@@ -70,7 +69,6 @@ pvesh create /nodes/<node>/network --type bridge --iface vmbr1  # Create bridge 
 ```
 
 ## Backup & Restore
-*Create and manage backups*
 
 ```bash
 vzdump <vmid> --storage <storage>  # Backup VM
@@ -82,7 +80,6 @@ cat /etc/cron.d/vzdump  # Show backup schedule
 ```
 
 ## Cluster
-*Manage Proxmox cluster*
 
 ```bash
 pvecm status  # Show cluster status
@@ -96,7 +93,6 @@ pvecm help  # Full cluster management help
 ```
 
 ## CLI Tools (pvesh, qm, pct)
-*Direct API and tool access*
 
 ```bash
 pvesh get /nodes  # List all nodes via API
@@ -109,3 +105,15 @@ pct config <ctid> | grep -i hostname  # Filter container config
 pct resize <ctid> <disk> <size>  # Resize container disk
 qm importcloudinit <vmid> <cloudinit-file> <storage>  # Add cloud-init
 ```
+
+---
+
+## Pitfalls
+
+- `qm` manages VMs, `pct` manages LXC containers. IDs are unique in the whole cluster.
+- A template can't be started: clone it (linked clone = fast but tied to the template, full clone = independent).
+- A backup on the same storage as the VMs is not a backup: send vzdump to another machine (PBS, NAS).
+- A 2-node cluster loses quorum when one node is down: add a QDevice.
+- `/etc/pve` is the cluster filesystem: edit it with care, changes replicate to all nodes.
+- Without a subscription, switch to the no-subscription repository or `apt update` fails.
+- Unprivileged LXC (default) maps UIDs: bind mounts need matching permissions on the host.

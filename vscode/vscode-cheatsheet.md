@@ -1,21 +1,21 @@
 # VS Code Cheat Sheet (Linux)
 
-Code editor by Microsoft — Linux shortcuts, CLI, config files and remote development
+Code editor by Microsoft — Linux shortcuts, CLI, config files and remote development.
+
+---
 
 ## Install & Update
-
-Install from Microsoft's repository (Debian/Ubuntu)
 
 ```bash
 sudo apt install ./code_*_amd64.deb  # Install downloaded .deb (also adds Microsoft apt repo)
 sudo apt update && sudo apt upgrade code  # Update through the repo
-## sudo snap install code --classic  # Alternative: Snap
-## Avoid the Flatpak version: sandbox breaks terminal, SDKs and Remote-SSH
+sudo snap install code --classic  # Alternative: Snap
+# Avoid the Flatpak version: sandbox breaks terminal, SDKs and Remote-SSH
 ```
 
 ## Essential Shortcuts
 
-Most useful keys — Ctrl+K Ctrl+S shows and edits all of them
+`Ctrl+K Ctrl+S` shows and edits all shortcuts.
 
 ```
 Ctrl+Shift+P   Command palette (everything is here)
@@ -31,8 +31,6 @@ Ctrl+Shift+T   Reopen closed file
 ```
 
 ## Editing
-
-Lines, comments, multi-cursor
 
 ```
 Alt+↑ / ↓          Move line up/down
@@ -50,8 +48,6 @@ Alt+Z              Toggle word wrap
 
 ## Navigation & Search
 
-Move around the code and the project
-
 ```
 Ctrl+G             Go to line
 Ctrl+Shift+O       Go to symbol in file
@@ -65,8 +61,6 @@ Ctrl+Shift+V       Markdown preview
 ```
 
 ## Command Line
-
-The `code` command
 
 ```bash
 code .  # Open current folder
@@ -84,15 +78,13 @@ code --disable-extensions  # Start without extensions (debug)
 
 ## Config Files
 
-Where VS Code stores your settings on Linux
-
 ```bash
 ~/.config/Code/User/settings.json  # User settings
 ~/.config/Code/User/keybindings.json  # Custom shortcuts
 ~/.config/Code/User/snippets/  # Code snippets
 ~/.vscode/extensions/  # Installed extensions
 .vscode/settings.json  # Per-project settings (inside a repo)
-## Settings Sync (account icon, bottom left) syncs everything via GitHub/Microsoft account
+# Settings Sync (account icon, bottom left) syncs everything via GitHub/Microsoft account
 ```
 
 **settings.json example:**
@@ -109,18 +101,16 @@ Where VS Code stores your settings on Linux
 
 ## Remote Development
 
-Edit files on a server, VM or container as if they were local
-
 ```bash
 # Extension "Remote - SSH" → uses your ~/.ssh/config hosts
 code --remote ssh-remote+myserver /home/user/project  # Open remote folder from CLI
-## Ctrl+Shift+P → "Remote-SSH: Connect to Host..."
-## Extension "Dev Containers" → open a project inside a Docker container
+# Ctrl+Shift+P → "Remote-SSH: Connect to Host..."
+# Extension "Dev Containers" → open a project inside a Docker container
 ```
 
 ## Useful Extensions (DevOps)
 
-Install with `code --install-extension <id>`
+Install with `code --install-extension <id>`.
 
 ```bash
 ms-vscode-remote.remote-ssh  # Remote SSH
@@ -136,8 +126,6 @@ eamodio.gitlens  # Git history and blame
 
 ## Troubleshooting
 
-Common Linux issues
-
 ```bash
 # "Unable to watch for file changes" → raise inotify limit
 echo 'fs.inotify.max_user_watches=524288' | sudo tee /etc/sysctl.d/99-vscode.conf
@@ -148,6 +136,18 @@ code --password-store=gnome-libsecret
 
 # Extension misbehaving → Ctrl+Shift+P "Developer: Reload Window"
 ```
+
+---
+
+## Pitfalls
+
+- Use the Microsoft repo package: the Snap and Flatpak versions break the terminal, SDKs and Remote-SSH.
+- Workspace settings (`.vscode/settings.json`) override user settings.
+- With Remote-SSH, extensions run on the **server**: install them there too.
+- Remote-SSH keeps old servers in `~/.vscode-server`: clean it when disk space is low.
+- "Unable to watch for file changes": raise `fs.inotify.max_user_watches`.
+
+---
 
 ## References
 

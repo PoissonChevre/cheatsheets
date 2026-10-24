@@ -1,10 +1,10 @@
-# 🛠 WSL — Cheat Sheet
-*Windows Subsystem for Linux - Run Linux environments natively on Windows*
+# WSL — Cheat Sheet
+
+Windows Subsystem for Linux - Run Linux environments natively on Windows.
 
 ---
 
-## WSL: Installation & Config
-*Install and configure WSL distributions*
+## Installation & Config
 
 ```powershell
 wsl --install  # Install WSL2 with default Ubuntu
@@ -17,8 +17,7 @@ wsl --set-version Ubuntu 2  # Convert WSL1 to WSL2
 wsl --update  # Update WSL kernel
 ```
 
-## WSL: Launch & Access
-*Enter and exit WSL environments*
+## Launch & Access
 
 ```powershell
 wsl  # Launch default distribution
@@ -30,8 +29,7 @@ wsl --terminate Ubuntu  # Terminate specific distribution
 wsl --help  # Show WSL commands
 ```
 
-## WSL: File Access & Transfer
-*Access files between Windows and WSL*
+## File Access & Transfer
 
 ```bash
 # In WSL:
@@ -48,8 +46,7 @@ wsl cat /etc/os-release  # Execute WSL commands
 Get-ChildItem \\wsl$\Ubuntu\home  # Access WSL files via network path
 ```
 
-## WSL: Distribution Management
-*Manage multiple WSL distributions*
+## Distribution Management
 
 ```powershell
 wsl --list  # List installed distributions
@@ -61,8 +58,7 @@ wsl --set-default Ubuntu-22.04  # Set default distro
 wsl --uninstall-kernel  # Remove WSL kernel (keep distros)
 ```
 
-## WSL: Interoperability
-*Call commands across Windows and WSL*
+## Interoperability
 
 ```bash
 # In WSL:
@@ -79,8 +75,7 @@ wsl cat /etc/lsb-release  # Run Linux command from Windows
 wsl grep "pattern" file.txt  # Use WSL grep from Windows
 ```
 
-## WSL: Networking Configuration
-*Configure network access and port forwarding*
+## Networking Configuration
 
 ```bash
 # In WSL:
@@ -102,8 +97,9 @@ npm start  # Accessible at localhost:3000 from Windows
 python -m http.server 8000  # Accessible from Windows at localhost:8000
 ```
 
-## WSL: .wslconfig Options
-*Configure WSL2 global settings (C:\Users\<UserName>\.wslconfig)*
+## .wslconfig Options
+
+Global settings for all WSL 2 distributions: `C:\Users\<UserName>\.wslconfig` (then `wsl --shutdown`).
 
 ```ini
 [wsl2]
@@ -124,8 +120,9 @@ appendWindowsPath=true  # Add Windows PATH to WSL
 default=username  # Default user for distro
 ```
 
-## WSL: /etc/wsl.conf Options
-*Configure WSL per-distribution settings (/etc/wsl.conf inside WSL)*
+## /etc/wsl.conf Options
+
+Settings for one distribution: `/etc/wsl.conf` inside it.
 
 ```ini
 [boot]
@@ -150,8 +147,7 @@ generateHosts=false  # Don't auto-generate /etc/hosts
 generateResolvConf=false  # Don't auto-generate resolv.conf
 ```
 
-## WSL: Troubleshooting
-*Diagnose and fix WSL issues*
+## Troubleshooting
 
 ```powershell
 # Check WSL status
@@ -175,184 +171,15 @@ Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform
 Enable-WindowsOptionalFeature -Online -FeatureName WSL
 ```
 
-## PowerShell: Basic Commands & Syntax
-*Essential PowerShell commands and language basics*
+PowerShell commands: see [powershell-cheatsheet.md](./powershell-cheatsheet.md).
 
-```powershell
-Get-Help command  # Get help for command
-Get-Help -Examples  # Show usage examples
-Get-Help -Full  # Display full help
-Get-Command  # List all available commands
-cls  # Clear screen
-$?  # Check if last command succeeded
-$LastExitCode  # Get exit code of last command
-```
+---
 
-## PowerShell: Navigation & File Paths
-*Browse directories and manage paths*
+## Pitfalls
 
-```powershell
-Get-Location  # Show current directory (pwd alias)
-Set-Location C:\Users\Name  # Change directory (cd alias)
-Push-Location C:\temp  # Save current location and move
-Pop-Location  # Return to saved location
-Get-Item -Path C:\  # Get item properties
-Get-ChildItem -Path C:\  # List files and folders (dir alias)
-Get-ChildItem -Path C:\ -Recurse  # List recursively
-Get-ChildItem -Path C:\ -Hidden  # Show hidden files
-Get-ChildItem -Filter *.txt  # Filter by extension
-```
-
-## PowerShell: Files & Permissions
-*Create, modify, and manage files with permissions*
-
-```powershell
-New-Item -ItemType Directory -Path C:\NewFolder  # Create directory
-New-Item -ItemType File -Path C:\file.txt  # Create empty file
-Remove-Item -Path C:\file.txt  # Delete file
-Remove-Item -Path C:\Folder -Recurse -Force  # Delete directory recursively
-Copy-Item -Path C:\source.txt -Destination C:\dest.txt  # Copy file
-Copy-Item -Path C:\Folder -Destination C:\Backup -Recurse  # Copy directory
-Move-Item -Path C:\file.txt -Destination C:\NewFolder\  # Move file
-Rename-Item -Path C:\old.txt -NewName C:\new.txt  # Rename file
-Get-ItemProperty -Path C:\file.txt  # Get file properties
-Set-ItemProperty -Path C:\file.txt -Name IsReadOnly -Value $true  # Set read-only
-Get-Acl -Path C:\file.txt  # Get file permissions
-Set-Acl -Path C:\file.txt -AclObject $acl  # Set file permissions
-```
-
-## PowerShell: Processes & Services
-*Control processes and services*
-
-```powershell
-Get-Process  # List running processes
-Get-Process -Name "notepad"  # Find specific process
-Start-Process -FilePath "notepad.exe"  # Start application
-Start-Process -FilePath "notepad" -ArgumentList "file.txt"  # Start with args
-Stop-Process -Name "notepad"  # Stop process by name
-Stop-Process -Id 1234  # Stop process by ID
-Stop-Process -Name "notepad" -Force  # Force stop
-Get-Process | Where-Object { $_.ProcessName -like "note*" }  # Filter processes
-Get-Service  # List all services
-Start-Service -Name "Windows Update"  # Start service
-Stop-Service -Name "Windows Update"  # Stop service
-Restart-Service -Name "Windows Update"  # Restart service
-```
-
-## PowerShell: Networking & Connectivity
-*Network diagnostics and configuration*
-
-```powershell
-ipconfig  # Show all network interfaces and IPs
-ipconfig /all  # Detailed network configuration
-ipconfig /release  # Release DHCP lease
-ipconfig /renew  # Renew DHCP lease
-netstat  # Show network connections and listening ports
-netstat -ano  # Detailed with process IDs
-ping hostname  # Ping host
-nslookup domain.com  # DNS lookup
-tracert domain.com  # Trace route to host
-Get-NetIPAddress  # Get IP addresses
-Test-NetConnection -ComputerName server.com -Port 443  # Test connection
-```
-
-## PowerShell: String Manipulation
-*Work with text and strings*
-
-```powershell
-$string = "Hello World"  # Create string
-$string.ToUpper()  # Convert to uppercase
-$string.ToLower()  # Convert to lowercase
-$string.Length  # Get string length
-$string.Substring(0, 5)  # Extract substring
-$string.Replace("World", "PowerShell")  # Replace text
-$string.Split(" ")  # Split string by delimiter
-$string -match "pattern"  # Match regex pattern
-$string -like "Hello*"  # Wildcard match
-"$name is $age years old"  # String interpolation
-"{0} {1}" -f $first, $last  # String formatting
-@"
-Multi-line
-string
-"@  # Here-string syntax
-```
-
-## PowerShell: Error Handling
-*Handle and manage errors in scripts*
-
-```powershell
-try { Get-Item C:\invalid } catch { Write-Host "Error occurred" }  # Try-catch block
-try { } catch [System.IO.FileNotFoundException] { }  # Catch specific exception
-try { } catch { $_.Exception.Message }  # Get error message
-try { } finally { Write-Host "Cleanup" }  # Finally block always runs
-$ErrorActionPreference = "Stop"  # Stop on error
-$ErrorActionPreference = "SilentlyContinue"  # Suppress errors
-$ErrorActionPreference = "Continue"  # Continue on error (default)
-Write-Error "Custom error"  # Write error message
-Write-Warning "Warning message"  # Write warning
-Write-Host "Message" -ForegroundColor Red  # Colored output
-```
-
-## PowerShell: Modules & Functions
-*Create and import reusable code*
-
-```powershell
-Get-Module  # List loaded modules
-Get-Module -ListAvailable  # List all available modules
-Import-Module ModuleName  # Import module
-Get-Command -Module ModuleName  # List module commands
-function Say-Hello { Write-Host "Hello!" }  # Define function
-function Greet($name) { Write-Host "Hello, $name!" }  # Function with parameter
-function Add-Numbers($a, $b) { return $a + $b }  # Function with return value
-function Get-Info {
-    param(
-        [string]$Name,
-        [int]$Age
-    )
-    Write-Host "$Name is $Age years old"
-}  # Function with typed parameters
-Export-ModuleMember -Function Say-Hello  # Export function from module
-```
-
-## PowerShell: Scripts & Automation Best Practices
-*Write maintainable and efficient scripts*
-
-```powershell
-# Comment your code
-<#
-  Multi-line comment
-  describing script purpose
-#>
-
-# Use meaningful variable names
-$userName = "admin"  # Good
-$u = "admin"  # Avoid
-
-# Use parameter blocks
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$ComputerName,
-    
-    [int]$Port = 3389
-)
-
-# Proper error handling
-$ErrorActionPreference = "Stop"
-trap { Write-Error $_; exit 1 }
-
-# Use Write-Host sparingly (prefer Write-Output for pipeline)
-Write-Output "Message to pipeline"
-Write-Host "Visual message to console"
-
-# Logging
-Add-Content -Path "log.txt" -Value "$(Get-Date): Action completed"
-
-# Use filters and Where-Object efficiently
-Get-Process | Where-Object { $_.Memory -gt 100MB }
-
-# Always quote paths with spaces
-Get-Item -Path "C:\Program Files\App"
-
-# Use -WhatIf and -Confirm for destructive operations
-Remove-Item -Path C:\file.txt -WhatIf  # Preview without executing
-```
+- Keep projects in the Linux filesystem (`~`), not in `/mnt/c`: it is much faster.
+- Run `wsl --shutdown` after changing `.wslconfig`.
+- The WSL 2 IP changes at every start (NAT): use mirrored networking (Windows 11) or a port forwarding script.
+- Git line endings: set `core.autocrlf` to avoid CRLF/LF changes.
+- WSL 2 can use a lot of RAM: limit it with `memory=` in `.wslconfig`.
+- Open Linux files from Windows through `\\wsl.localhost\<distro>`, never through the hidden AppData folder.

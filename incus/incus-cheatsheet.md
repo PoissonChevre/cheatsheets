@@ -1,8 +1,10 @@
-# Incus Cheat Sheet
-*Linux container and VM management platform (LXD fork)*
+# Incus — Cheat Sheet
+
+Linux container and VM management platform (LXD fork).
+
+---
 
 ## Instance Management
-*Create, start, stop, and manage containers/VMs*
 
 ```bash
 incus list  # Show all instances
@@ -20,7 +22,6 @@ incus file pull instance-name/remote/path /local/path  # Copy file from instance
 ```
 
 ## Images
-*Manage container/VM images*
 
 ```bash
 incus image list  # List available images
@@ -34,7 +35,6 @@ incus publish instance-name --alias custom-image  # Create image from instance
 ```
 
 ## Profiles
-*Manage instance profiles for configuration templates*
 
 ```bash
 incus profile list  # List profiles
@@ -48,7 +48,6 @@ incus profile device add myprofile root disk path=/ pool=default  # Add device t
 ```
 
 ## Networking
-*Configure network interfaces and connectivity*
 
 ```bash
 incus network list  # List networks
@@ -63,7 +62,6 @@ incus config get instance-name environment.HTTP_PROXY  # Show instance environme
 ```
 
 ## Storage
-*Manage storage pools and volumes*
 
 ```bash
 incus storage list  # List storage pools
@@ -77,7 +75,6 @@ incus config device add instance-name data disk pool=mypool source=myvolume path
 ```
 
 ## Snapshots
-*Create and restore instance snapshots*
 
 ```bash
 incus snapshot create instance-name snapshot-name  # Create snapshot
@@ -89,7 +86,6 @@ incus snapshot info instance-name snapshot-name  # Show snapshot details
 ```
 
 ## Migration
-*Move instances between hosts*
 
 ```bash
 incus move instance-name --target=remote-host  # Migrate to another host
@@ -98,3 +94,14 @@ incus remote add remote-name https://host:8443  # Add remote server
 incus remote list  # List configured remotes
 incus remote remove remote-name  # Remove remote
 ```
+
+---
+
+## Pitfalls
+
+- Containers and VMs need different images: add `--vm` and use a cloud/VM image.
+- Changing a profile changes every instance that uses it.
+- `incus delete` also deletes the snapshots of the instance.
+- Avoid `security.privileged=true`: a privileged container is root on the host.
+- The `dir` storage driver has no fast snapshots or copies: prefer ZFS or Btrfs.
+- Remote images change: pin the image alias or fingerprint for reproducible builds.

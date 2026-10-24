@@ -1,12 +1,10 @@
 # PowerShell — Cheat Sheet
 
-Microsoft's cross-platform task automation and configuration management framework
+Microsoft's cross-platform task automation and configuration management framework.
 
 ---
 
 ## Basics & Syntax
-
-Essential PowerShell language fundamentals
 
 ```powershell
 # Variable assignment
@@ -33,8 +31,6 @@ $hash["key"]  # Access hashtable value
 
 ## Navigation
 
-Browse directories and work with paths
-
 ```powershell
 Get-Location  # Show current directory (pwd alias)
 Set-Location C:\Users\Name  # Change directory (cd alias)
@@ -47,8 +43,6 @@ Pop-Location  # Return to saved location
 ```
 
 ## Files & Permissions
-
-Create, modify, delete, and secure files
 
 ```powershell
 New-Item -ItemType Directory -Path C:\NewFolder  # Create directory
@@ -68,8 +62,6 @@ Add-Content -Path C:\file.txt -Value "append"  # Append to file
 
 ## Permissions (NTFS ACL)
 
-Manage file and folder access control
-
 ```powershell
 Get-Acl -Path C:\file.txt  # Get file permissions
 Get-Acl -Path C:\Folder | Format-List  # View detailed permissions
@@ -82,8 +74,6 @@ icacls C:\file.txt /remove "user"  # Remove user permissions
 ```
 
 ## Processes
-
-Manage running applications and background tasks
 
 ```powershell
 Get-Process  # List running processes
@@ -99,8 +89,6 @@ Get-Process | Sort-Object -Property WorkingSet -Descending  # Top memory users
 ```
 
 ## Networking
-
-Network diagnostics, configuration, and connectivity testing
 
 ```powershell
 ipconfig  # Show all network interfaces and IPs
@@ -124,8 +112,6 @@ Get-NetTCPConnection -LocalPort 443  # Connections on specific port
 ```
 
 ## String Manipulation
-
-Format, extract, and transform text
 
 ```powershell
 $string = "Hello World"  # Create string
@@ -157,20 +143,18 @@ $string | Select-String "pattern"  # Search within string
 
 ## Error Handling & Debugging
 
-Catch exceptions and troubleshoot scripts
-
 ```powershell
-try { 
-    Get-Item C:\invalid 
-} catch { 
+try {
+    Get-Item C:\invalid
+} catch {
     Write-Host "Error occurred"
 }  # Basic try-catch
 
 try { } catch [System.IO.FileNotFoundException] { }  # Catch specific exception
 try { } catch [System.UnauthorizedAccessException] { }  # Catch access denied
-try { 
-    # code 
-} catch { 
+try {
+    # code
+} catch {
     $_.Exception.Message  # Get error message
     $_.Exception.GetType().Name  # Get exception type
 }  # Access error details
@@ -190,8 +174,6 @@ Write-Debug "Debug message" -Debug  # Debug output (requires -Debug)
 
 ## Modules & Imports
 
-Load and work with PowerShell modules
-
 ```powershell
 Get-Module  # List currently loaded modules
 Get-Module -ListAvailable  # List all available modules on system
@@ -209,8 +191,6 @@ Update-Module ModuleName  # Update installed module
 ```
 
 ## Script Best Practices
-
-Write maintainable, robust, and efficient scripts
 
 ```powershell
 #!/usr/bin/env pwsh  # Shebang for cross-platform scripts
@@ -242,10 +222,10 @@ Write maintainable, robust, and efficient scripts
 param(
     [Parameter(Mandatory=$true)]
     [string]$ComputerName,
-    
+
     [Parameter(Mandatory=$false)]
     [int]$Port = 3389,
-    
+
     [switch]$Verbose
 )
 
@@ -312,8 +292,6 @@ if (-not $result) {
 
 ## Variables & Data Types
 
-Work with PowerShell data types and variables
-
 ```powershell
 # String operations
 $string = "Hello World"  # Create string
@@ -346,19 +324,17 @@ $x -or $y  # Logical OR
 
 ## Conditionals & Loops
 
-Control program flow and iteration
-
 ```powershell
 # If-else statements
-if ($condition) { 
-    Write-Host "True" 
+if ($condition) {
+    Write-Host "True"
 }  # If statement
-if ($x -eq 5) { 
-    Write-Host "Equal" 
-} elseif ($x -gt 5) { 
-    Write-Host "Greater" 
-} else { 
-    Write-Host "Less" 
+if ($x -eq 5) {
+    Write-Host "Equal"
+} elseif ($x -gt 5) {
+    Write-Host "Greater"
+} else {
+    Write-Host "Less"
 }  # If-elseif-else
 
 # Switch statement
@@ -369,13 +345,13 @@ switch ($status) {
 }  # Switch with default
 
 # For loop
-for ($i = 0; $i -lt 10; $i++) { 
-    Write-Host $i 
+for ($i = 0; $i -lt 10; $i++) {
+    Write-Host $i
 }  # C-style for loop
 
 # Foreach loop
-foreach ($item in $collection) { 
-    Write-Host $item 
+foreach ($item in $collection) {
+    Write-Host $item
 }  # For-each loop
 1..10 | ForEach-Object { Write-Host $_ }  # Range loop
 
@@ -390,22 +366,20 @@ continue  # Skip to next iteration
 
 ## Functions
 
-Create reusable function blocks with parameters
-
 ```powershell
 # Simple function
-function Say-Hello { 
-    Write-Host "Hello!" 
+function Say-Hello {
+    Write-Host "Hello!"
 }
 
 # Function with parameters
-function Greet($name) { 
-    Write-Host "Hello, $name!" 
+function Greet($name) {
+    Write-Host "Hello, $name!"
 }
 
 # Function with return value
-function Add-Numbers($a, $b) { 
-    return $a + $b 
+function Add-Numbers($a, $b) {
+    return $a + $b
 }
 
 # Function with typed parameters
@@ -438,8 +412,6 @@ function Remove-UserAccount {
 
 ## Arrays & Collections
 
-Work with lists and collections of data
-
 ```powershell
 $array = @(1, 2, 3)  # Create array
 $array += 4  # Add element
@@ -456,8 +428,6 @@ $array | Measure-Object -Average  # Calculate average
 ```
 
 ## Output & Formatting
-
-Control command output display and formatting
 
 ```powershell
 Write-Host "message"  # Write to console (colored output)
@@ -480,8 +450,6 @@ Get-Process | Measure-Object  # Count and statistics
 
 ## Pipeline & Data Flow
 
-Chain commands and pass data through the pipeline
-
 ```powershell
 command1 | command2  # Pipe output as input
 Get-Process | Where-Object { $_.ProcessName -like "note*" }  # Filter
@@ -494,3 +462,15 @@ $data = Get-Content -Path data.json | ConvertFrom-Json  # Parse JSON
 Get-ChildItem | Export-Csv -Path output.csv  # Export to CSV
 Import-Csv -Path data.csv | ForEach-Object { $_.Name }  # Import from CSV
 ```
+
+---
+
+## Pitfalls
+
+- PowerShell passes **objects**, not text: use `Select-Object`, `Where-Object` instead of parsing strings.
+- Comparisons are `-eq -ne -gt -lt -like -match`; `>` is a redirection.
+- The escape character is the backtick `` ` ``, not `\`.
+- Scripts blocked? `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`.
+- `try/catch` only catches terminating errors: add `-ErrorAction Stop` or `$ErrorActionPreference = 'Stop'`.
+- Windows PowerShell 5.1 and PowerShell 7 (`pwsh`) differ; in 5.1 `curl` and `wget` are aliases of `Invoke-WebRequest`.
+- Use `-WhatIf` before destructive commands.

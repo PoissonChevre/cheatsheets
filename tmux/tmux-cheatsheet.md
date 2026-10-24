@@ -1,10 +1,10 @@
-# Tmux Cheat Sheet
+# Tmux — Cheat Sheet
 
-Terminal multiplexer for managing multiple sessions and windows
+Terminal multiplexer for managing multiple sessions and windows.
+
+---
 
 ## Sessions
-
-Create and manage tmux sessions
 
 ```bash
 tmux new-session -s name  # Create new session
@@ -19,8 +19,6 @@ tmux list-commands  # List all tmux commands
 ```
 
 ## Windows
-
-Create and switch between windows within a session
 
 ```bash
 tmux new-window -t session:1  # Create new window in session
@@ -38,8 +36,6 @@ prefix + &  # Kill current window
 ```
 
 ## Panes
-
-Split windows into multiple panes
 
 ```bash
 tmux split-window -h  # Split horizontally
@@ -61,8 +57,6 @@ prefix + z  # Zoom current pane (toggle)
 
 ## Copy Mode
 
-Select, copy, and paste text
-
 ```bash
 # Inside tmux (navigate with vi/emacs keys):
 prefix + [  # Enter copy mode
@@ -78,8 +72,6 @@ q  # Exit copy mode
 ```
 
 ## Custom Key Bindings
-
-Configure custom shortcuts in ~/.tmux.conf
 
 ```bash
 # Rebind prefix key to Ctrl+a
@@ -106,8 +98,6 @@ set -g mouse on
 ```
 
 ## Config Tips
-
-Optimize tmux configuration
 
 ```bash
 # ~/.tmux.conf example:
@@ -149,3 +139,13 @@ new-session -s work -d
 ```bash
 tmux source-file ~/.tmux.conf  # Reload config
 ```
+
+---
+
+## Pitfalls
+
+- Default prefix is `Ctrl+b`. After editing `~/.tmux.conf`: `tmux source-file ~/.tmux.conf`.
+- `prefix d` detaches (session keeps running); `exit` closes the shell.
+- tmux inside tmux (over SSH): press the prefix twice to reach the inner one.
+- With mouse mode on, hold `Shift` to select text with the terminal.
+- Copy mode keys depend on `mode-keys` (vi or emacs).

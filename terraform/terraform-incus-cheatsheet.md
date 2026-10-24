@@ -1,10 +1,10 @@
-# 🌍 Terraform + Incus — Cheat Sheet
-*Terraform provider for managing Incus containers and virtual machines.*
+# Terraform + Incus — Cheat Sheet
+
+Terraform provider for managing Incus containers and virtual machines.
 
 ---
 
-## 🔌 Provider Setup & Authentication
-*Configure the Incus provider and authentication credentials.*
+## Provider Setup & Authentication
 
 ```hcl
 terraform {
@@ -41,8 +41,7 @@ resource "incus_instance" "prod" {
 
 ---
 
-## 🐳 incus_instance (Container & VM)
-*Create and manage Incus containers and virtual machines.*
+## incus_instance (Container & VM)
 
 ```hcl
 # Create a container
@@ -53,7 +52,7 @@ resource "incus_instance" "web" {
   ephemeral = false  # Persistent instance
 
   profiles = ["default"]  # Apply profiles
-  
+
   config = {
     "limits.cpu"    = "2"  # CPU cores
     "limits.memory" = "2GB"  # Memory limit
@@ -84,7 +83,7 @@ resource "incus_instance" "vm" {
   name  = "ubuntu-vm"
   image = "images:ubuntu/22.04"
   type  = "virtual-machine"  # VM instead of container
-  
+
   config = {
     "limits.cpu"    = "4"
     "limits.memory" = "8GB"
@@ -95,7 +94,7 @@ resource "incus_instance" "vm" {
 resource "incus_instance" "app" {
   name  = "app-server"
   image = "images:ubuntu/22.04"
-  
+
   provisioner "file" {
     source      = "app.conf"  # Local file
     destination = "/tmp/app.conf"  # Remote path
@@ -112,8 +111,7 @@ resource "incus_instance" "app" {
 
 ---
 
-## 🌐 incus_network
-*Create and configure Incus networks.*
+## incus_network
 
 ```hcl
 # Create a managed bridge network
@@ -135,7 +133,7 @@ resource "incus_network" "custom" {
 resource "incus_instance" "web" {
   name  = "web"
   image = "images:ubuntu/22.04"
-  
+
   device {
     name = "custom-eth0"
     type = "nic"
@@ -150,15 +148,14 @@ resource "incus_instance" "web" {
 
 ---
 
-## 💾 incus_storage_pool & incus_volume
-*Create storage pools and manage volumes.*
+## incus_storage_pool & incus_volume
 
 ```hcl
 # Create storage pool
 resource "incus_storage_pool" "local" {
   name   = "storage-pool"  # Pool name
   driver = "dir"  # Storage driver: dir, lvm, btrfs, zfs, ceph
-  
+
   config = {
     "source" = "/var/lib/incus/storage-pools/custom"  # Pool location
   }
@@ -170,7 +167,7 @@ resource "incus_volume" "data" {
   pool  = incus_storage_pool.local.name  # Pool reference
   type  = "custom"  # Volume type
   size  = "50GB"  # Volume size
-  
+
   config = {
     "size" = "50GB"
   }
@@ -180,7 +177,7 @@ resource "incus_volume" "data" {
 resource "incus_instance" "app" {
   name  = "app"
   image = "images:ubuntu/22.04"
-  
+
   device {
     name = "data"
     type = "disk"
@@ -202,14 +199,13 @@ resource "incus_volume_snapshot" "backup" {
 
 ---
 
-## 👤 incus_profile
-*Create and manage instance profiles.*
+## incus_profile
 
 ```hcl
 # Create a profile
 resource "incus_profile" "web" {
   name = "web-profile"  # Profile name
-  
+
   config = {
     "limits.cpu"    = "2"  # CPU limits
     "limits.memory" = "2GB"  # Memory limits
@@ -237,7 +233,7 @@ resource "incus_profile" "web" {
 # Create a GPU profile
 resource "incus_profile" "gpu" {
   name = "gpu-profile"
-  
+
   device {
     name = "gpu"
     type = "gpu"  # GPU device
@@ -258,8 +254,7 @@ resource "incus_instance" "compute" {
 
 ---
 
-## 🌍 Remote Management
-*Manage instances across multiple remote Incus servers.*
+## Remote Management
 
 ```hcl
 # Multiple remotes in configuration
@@ -296,7 +291,7 @@ resource "incus_instance" "remote_access" {
   provider = incus.remote2
   name     = "accessible"
   image    = "images:ubuntu/22.04"
-  
+
   config = {
     "raw.lxc" = "lxc.net.0.type=none"  # Custom LXC config for remote
   }
@@ -321,15 +316,14 @@ resource "incus_instance" "dynamic" {
 
 ---
 
-## 📋 Full Examples
-*Complete working examples for common scenarios.*
+## Full Examples
 
 ```hcl
 # Example 1: Create a web server container with custom network and storage
 resource "incus_network" "app_net" {
   name = "app-network"
   type = "bridge"
-  
+
   config = {
     "ipv4.address" = "10.50.0.1/24"
     "ipv4.nat"     = "true"
@@ -339,7 +333,7 @@ resource "incus_network" "app_net" {
 resource "incus_storage_pool" "app_storage" {
   name   = "app-pool"
   driver = "dir"
-  
+
   config = {
     "source" = "/var/lib/incus/storage-pools/app"
   }
@@ -354,7 +348,7 @@ resource "incus_volume" "app_data" {
 resource "incus_instance" "webserver" {
   name  = "webserver"
   image = "images:ubuntu/22.04"
-  
+
   config = {
     "limits.cpu"    = "2"
     "limits.memory" = "2GB"
@@ -384,7 +378,7 @@ resource "incus_instance" "webserver" {
 # Example 2: Create a high-performance VM with profile
 resource "incus_profile" "vm_performance" {
   name = "vm-perf"
-  
+
   config = {
     "limits.cpu"      = "4"
     "limits.memory"   = "8GB"
@@ -406,7 +400,7 @@ resource "incus_instance" "database_vm" {
   image    = "images:ubuntu/22.04"
   type     = "virtual-machine"  # VM instead of container
   profiles = ["vm_performance"]
-  
+
   config = {
     "user.data" = <<-EOT
       #cloud-config
@@ -422,10 +416,10 @@ resource "incus_instance" "database_vm" {
 # Example 3: Multi-instance deployment with load balancing
 resource "incus_instance" "web_cluster" {
   for_each = toset(["web1", "web2", "web3"])  # Create 3 instances
-  
+
   name  = each.value
   image = "images:ubuntu/22.04"
-  
+
   config = {
     "limits.cpu"    = "1"
     "limits.memory" = "1GB"
@@ -449,7 +443,6 @@ output "web_cluster_ips" {
 ```
 
 ## Useful Patterns
-*Common Terraform patterns for Incus management.*
 
 ```hcl
 # Conditional instance creation
@@ -460,7 +453,7 @@ variable "enable_monitoring" {
 
 resource "incus_instance" "monitoring" {
   count = var.enable_monitoring ? 1 : 0  # Create only if enabled
-  
+
   name  = "prometheus"
   image = "images:ubuntu/22.04"
 }
@@ -476,9 +469,9 @@ variable "instances" {
 
 resource "incus_instance" "templated" {
   for_each = { for inst in var.instances : inst.name => inst }
-  
+
   name = each.value.name
-  
+
   config = {
     "limits.cpu"    = tostring(each.value.cpu)
     "limits.memory" = each.value.memory
@@ -494,3 +487,14 @@ output "existing_instance_ip" {
   value = data.incus_instance.existing.ip_address
 }
 ```
+
+---
+
+## Pitfalls
+
+- The provider is still 0.x: pin the version, read the changelog before upgrading.
+- Changing the image of an instance recreates it: check the plan for `-/+`.
+- Changes made with the `incus` CLI cause drift: Terraform will try to undo them.
+- Renaming a resource in code destroys it: use a `moved` block.
+- Remote certificates and trust tokens are secrets: keep them out of Git.
+- Volumes attached to instances: destroy order matters, use `depends_on` if needed.

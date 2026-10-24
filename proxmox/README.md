@@ -1,9 +1,23 @@
-# Learn Linux TV : [Apprenez Proxmox Virtual Environment](https://www.learnlinux.tv/proxmox-full-course/)
+# Proxmox VE — Cheat Sheets
 
-Proxmox Virtual Environment est une solution de virtualisation open-source puissante que j'ai choisie pour implémenter mon propre homelab. Ce tutoriel pour débutants m'a permis de comprendre les bases de Proxmox et m’a ensuite conduit à l'implémentation d'un cluster Kubernetes (K8s). Grâce à cette expérience, j'ai pu appliquer les connaissances acquises pour configurer et gérer un environnement Kubernetes sur Proxmox, consolidant ainsi mes compétences en virtualisation et en orchestration de conteneurs.
+| File | Content |
+|---|---|
+| [proxmox-cheatsheet.md](./proxmox-cheatsheet.md) | VMs (`qm`), containers (`pct`), storage, networking, backup, cluster, API |
 
-## Ressources
+## Scripts
 
-### [Perfect Proxmox Template with Cloud Image and Cloud Init](https://technotim.live/posts/cloud-init-cloud-image/)
+| Script | Use |
+|---|---|
+| [vm_template1.sh](./scripts/vm_template1.sh) | Create a VM template from a cloud image, with arguments (VM ID, image...) |
+| [vm_template2.sh](./scripts/vm_template2.sh) | Cloud-init VM template for Kubernetes nodes |
+| [vm_template3.sh](./scripts/vm_template3.sh) | Ubuntu cloud image + cloud-init template, step by step |
+| [ct_template1.sh](./scripts/ct_template1.sh) | Prepare an LXC container before turning it into a template |
 
-### [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/)
+## Resources
+
+- [Learn Linux TV — Proxmox VE full course](https://www.learnlinux.tv/proxmox-full-course/)
+- [Techno Tim — Perfect Proxmox template with cloud image and cloud-init](https://technotim.live/posts/cloud-init-cloud-image/)
+- [apalrd — Proxmox VM templates with cloud images](https://www.apalrd.net/posts/2023/pve_cloud/)
+- [Ubuntu cloud images](https://cloud-images.ubuntu.com/)
+
+Related: [Terraform](../terraform/README.md) · [Talos Linux](../talos/talos-cheatsheet.md)

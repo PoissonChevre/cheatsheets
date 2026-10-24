@@ -1,10 +1,10 @@
-# Vim Cheat Sheet
+# Vim — Cheat Sheet
 
-Highly configurable text editor with modal editing paradigm
+Highly configurable text editor with modal editing paradigm.
+
+---
 
 ## Modes
-
-Understanding Vim's modal editing
 
 ```bash
 vim file.txt  # Open file in vim
@@ -20,8 +20,6 @@ Ctrl+v  # Visual block mode (select columns)
 ```
 
 ## Navigation
-
-Move cursor through file
 
 ```bash
 h  # Move left
@@ -48,8 +46,6 @@ Ctrl+u  # Half page up
 
 ## Editing
 
-Insert, change, and delete text
-
 ```bash
 i  # Insert before cursor
 I  # Insert at line start
@@ -75,8 +71,6 @@ Ctrl+r  # Redo
 
 ## Search & Replace
 
-Find and modify text
-
 ```bash
 /pattern  # Search forward
 ?pattern  # Search backward
@@ -95,8 +89,6 @@ N  # Previous match
 
 ## Macros
 
-Record and playback command sequences
-
 ```bash
 qa  # Start recording macro 'a'
 q  # Stop recording
@@ -108,8 +100,6 @@ q  # Stop recording
 ```
 
 ## Splits & Tabs
-
-Work with multiple windows and tabs
 
 ```bash
 :split filename  # Split horizontally
@@ -131,8 +121,6 @@ gT  # Go to previous tab
 
 ## Save & Quit
 
-Save files and exit vim
-
 ```bash
 :w  # Save file
 :w filename  # Save as new filename
@@ -148,3 +136,13 @@ ZZ  # Save and quit (shortcut)
 :read filename  # Insert file contents
 :terminal  # Open terminal buffer
 ```
+
+---
+
+## Pitfalls
+
+- Press `Esc` before typing a command. `:q!` quits without saving.
+- `u` undo, `Ctrl+R` redo.
+- "Swap file already exists": the file is open elsewhere or Vim crashed. Recover or delete the `.swp`.
+- Search and substitute use regex: escape `.` and `/` (or use another delimiter: `:%s#a/b#c#g`).
+- Forgot sudo: `:w !sudo tee %` (Vim only).

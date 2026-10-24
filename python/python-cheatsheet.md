@@ -1,10 +1,10 @@
 # Python — Cheat Sheet
-*Versatile, readable programming language for scripting, web, data science, and automation.*
+
+Versatile, readable programming language for scripting, web, data science, and automation.
 
 ---
 
 ## Data Types & Variables
-*Basic data types and variable assignment.*
 
 ```python
 x = 10  # Integer
@@ -26,8 +26,7 @@ isinstance(x, int)  # Check if variable is integer
 
 ---
 
-## 🔤 Strings
-*String creation, manipulation, and formatting.*
+## Strings
 
 ```python
 # String creation
@@ -64,8 +63,7 @@ f"Name: {name}, Age: {age}"  # f-string (modern)
 
 ---
 
-## 📋 Lists & Dicts
-*Collections for storing and organizing data.*
+## Lists & Dicts
 
 ```python
 # Lists (mutable, ordered)
@@ -106,8 +104,7 @@ for i, num in enumerate(nums):  # Get index and value
 
 ---
 
-## 🎛️ Control Flow
-*Conditional statements and branching.*
+## Control Flow
 
 ```python
 # if/elif/else
@@ -137,8 +134,7 @@ not (x == 5)  # Negate condition
 
 ---
 
-## 🔄 Loops
-*Iterate over sequences and repeat code blocks.*
+## Loops
 
 ```python
 # for loop
@@ -176,8 +172,7 @@ else:  # Executes if loop completes normally (no break)
 
 ---
 
-## 🔧 Functions
-*Define reusable blocks of code.*
+## Functions
 
 ```python
 # Basic function
@@ -215,8 +210,7 @@ squared = list(map(lambda x: x ** 2, nums))  # [1, 4, 9, 16]
 
 ---
 
-## 📁 File I/O
-*Read and write files.*
+## File I/O
 
 ```python
 # Read file
@@ -250,8 +244,7 @@ loaded = json.load(f)  # Read JSON from file
 
 ---
 
-## ⚠️ Error Handling
-*Catch and handle exceptions.*
+## Error Handling
 
 ```python
 # try/except/finally
@@ -279,8 +272,7 @@ raise CustomError("Something went wrong")
 
 ---
 
-## 🎯 Comprehensions
-*Create lists, dicts, and sets concisely.*
+## Comprehensions
 
 ```python
 # List comprehension
@@ -302,8 +294,7 @@ next(gen)  # Get next value
 
 ---
 
-## 📚 Modules & Imports
-*Import and use external code modules.*
+## Modules & Imports
 
 ```python
 import math  # Import entire module
@@ -325,8 +316,7 @@ if __name__ == "__main__":  # True only when script is executed directly
 
 ---
 
-## 🔨 Useful stdlib
-*Common standard library modules.*
+## Useful stdlib
 
 ```python
 # os - Operating system functions
@@ -366,3 +356,16 @@ p.parent  # Parent directory
 p.name  # Filename
 p.stem  # Filename without extension
 ```
+
+---
+
+## Pitfalls
+
+- Mutable default arguments are shared: use `def f(items=None)`, not `def f(items=[])`.
+- `b = a` on a list doesn't copy it: use `a.copy()` or `list(a)`.
+- `==` compares values, `is` compares identity (use `is` only for `None`).
+- `/` always returns a float, `//` is integer division.
+- Use a virtual environment (`python3 -m venv .venv`) instead of `sudo pip`.
+- Open files with `with open(..., encoding="utf-8")`.
+- Catch precise exceptions, never a bare `except:`.
+- Indent with 4 spaces, never mix tabs and spaces.

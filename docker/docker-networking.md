@@ -2,7 +2,7 @@
 
 How containers talk to each other, to the host and to the network.
 
-Back to the main cheat sheet: [README.md](./README.md) · Official docs: <https://docs.docker.com/engine/network/>
+Back to: [docker-cheatsheet.md](./docker-cheatsheet.md) · Official docs: <https://docs.docker.com/engine/network/>
 
 ---
 
@@ -200,6 +200,17 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' web
 docker port web                                # Published ports
 docker run --rm -it --network my-net nicolaka/netshoot   # Container with network tools (ping, dig, curl, tcpdump)
 ```
+
+---
+
+## Pitfalls
+
+- The default bridge has no DNS between containers: create a custom bridge.
+- With `--network host`, `-p` is ignored.
+- The host can't reach its own macvlan containers without an extra macvlan interface.
+- Macvlan/IPvlan IP ranges must be outside the DHCP range of the LAN.
+- Docker writes its own iptables rules: published ports are open even if ufw says otherwise.
+- Overlay networks need ports 2377/tcp, 7946/tcp+udp and 4789/udp open between hosts.
 
 ---
 

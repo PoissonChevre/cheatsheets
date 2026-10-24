@@ -1,12 +1,10 @@
-# Ansible — Cheat Sheet  
+# Ansible — Cheat Sheet
 
-*Infrastructure automation and configuration management using agentless push-based orchestration.*
+Infrastructure automation and configuration management using agentless push-based orchestration.
 
 ---
 
-## Inventory  
-
-*Define hosts, groups, and variables for target systems.*
+## Inventory
 
 ```ini
 [webservers]  # Group definition
@@ -38,8 +36,6 @@ all:
 
 ## Host patterns
 
-[Learn more in playbooks: use patterns to target specific groups or hosts]
-
 ```bash
 ansible webservers -i inventory.ini -m ping  # Target specific group
 ansible 'web*' -i inventory.ini -m ping  # Wildcard pattern
@@ -51,41 +47,29 @@ ansible '!web1' -i inventory.ini -m ping  # All except web1
 
 ## Ad-hoc Commands
 
-*Run single tasks directly without playbooks.*
-
 ```bash
 ansible all -i inventory.ini -m ping  # Test connectivity to all hosts
-## Requires SSH key or password authentication
 
-ansible webservers -i inventory.ini -m command -a "uptime"  # Execute shell command
-## command module doesn't support pipes or redirects; use shell module instead
+ansible webservers -i inventory.ini -m command -a "uptime"  # Run a command (no pipes/redirects: use shell)
 
 ansible webservers -i inventory.ini -m shell -a "ps aux | grep nginx"  # Shell commands with pipes
-## shell module runs in /bin/sh; has slight overhead vs command
 
-ansible webservers -i inventory.ini -m apt -a "name=nginx state=present"  # Install package (Debian)
-## Uses Debian-style package manager; use yum for RedHat systems
+ansible webservers -i inventory.ini -m apt -a "name=nginx state=present"  # Install a package (Debian; dnf on RHEL)
 
-ansible webservers -i inventory.ini -m service -a "name=nginx state=started enabled=yes"  # Manage services
-## state: started, stopped, restarted, reloaded
+ansible webservers -i inventory.ini -m service -a "name=nginx state=started enabled=yes"  # started, stopped, restarted, reloaded
 
 ansible webservers -i inventory.ini -m copy -a "src=file.txt dest=/tmp/file.txt"  # Copy files
-## src and dest can be files or directories
 
-ansible webservers -i inventory.ini -m user -a "name=testuser state=present"  # Create user
-## Use state=absent to remove user
+ansible webservers -i inventory.ini -m user -a "name=testuser state=present"  # Create a user (state=absent = remove)
 
 ansible webservers -i inventory.ini -m debug -a "msg='Hello'"  # Print debug message
-## Useful for ad-hoc testing and variable inspection
 
-ansible webservers -i inventory.ini --become -m shell -a "whoami"  # Run with sudo/root
-## Requires become_user in inventory or --become-user flag
+ansible webservers -i inventory.ini --become -m shell -a "whoami"  # Run as root (sudo); --become-user for another user
 ```
 
 ---
 
 ## Playbooks
-*Structured automation using YAML syntax.*
 
 ```yaml
 ---
@@ -136,11 +120,8 @@ ansible webservers -i inventory.ini --become -m shell -a "whoami"  # Run with su
 
 ## Playbook execution
 
-[Run playbooks with ansible-playbook command]
-
 ```bash
-ansible-playbook playbook.yml  # Run playbook with default inventory
-## Default inventory: /etc/ansible/hosts
+ansible-playbook playbook.yml  # Default inventory: ansible.cfg, else /etc/ansible/hosts
 
 ansible-playbook playbook.yml -i inventory.ini  # Use specific inventory file
 ansible-playbook playbook.yml -l webservers  # Limit to specific group
@@ -153,8 +134,6 @@ ansible-playbook playbook.yml --start-at-task "Install nginx"  # Resume from tas
 ---
 
 ## Variables & Facts
-
-*Define and use variables; access system facts.*
 
 ```yaml
 ---
@@ -188,7 +167,7 @@ ansible-playbook playbook.yml --start-at-task "Install nginx"  # Resume from tas
     - name: Access fact
       debug:
         msg: "Hostname is {{ ansible_hostname }}"  # Facts from gather_facts
-      ## Common facts: ansible_distribution, ansible_os_family, ansible_processor_count
+      # Common facts: ansible_distribution, ansible_os_family, ansible_processor_count
 
     - name: Set fact
       set_fact:
@@ -205,8 +184,6 @@ ansible-playbook playbook.yml --start-at-task "Install nginx"  # Resume from tas
 ```
 
 ## Variable precedence
-
-[Higher precedence overrides lower: CLI args > vars_files > vars > defaults]
 
 ```yaml
 ---
@@ -227,11 +204,8 @@ ansible-playbook playbook.yml --start-at-task "Install nginx"  # Resume from tas
 
 ## Roles
 
-*Organize tasks, handlers, vars, and templates in reusable packages.*
-
 ```bash
-ansible-galaxy role init webserver  # Create role directory structure
-## Creates: defaults/, files/, handlers/, meta/, tasks/, templates/, vars/
+ansible-galaxy role init webserver  # Skeleton: defaults, files, handlers, meta, tasks, templates, vars
 ```
 
 ```
@@ -274,8 +248,6 @@ webserver/
 
 ## Vault
 
-*Encrypt sensitive data like passwords and keys.*
-
 ```bash
 ansible-vault create secrets.yml  # Create encrypted file (prompts for password)
 ansible-vault edit secrets.yml  # Edit encrypted file
@@ -285,8 +257,7 @@ ansible-vault decrypt secrets.yml  # Decrypt to plaintext (careful!)
 ansible-vault rekey secrets.yml  # Change encryption password
 
 ansible-playbook playbook.yml --ask-vault-pass  # Prompt for vault password at runtime
-ansible-playbook playbook.yml --vault-password-file=.vault_pass  # Use password file
-## Store .vault_pass in secure location with restricted permissions
+ansible-playbook playbook.yml --vault-password-file=.vault_pass  # Password file (chmod 600, never in Git)
 ```
 
 ```yaml
@@ -299,8 +270,6 @@ api_key: "sk-1234567890"
 ---
 
 ## Tags
-
-*Run only specific tasks or skip groups of tasks.*
 
 ```yaml
 ---
@@ -335,8 +304,6 @@ api_key: "sk-1234567890"
 
 ## Tag usage
 
-[Control which tasks run via --tags and --skip-tags]
-
 ```bash
 ansible-playbook playbook.yml --tags install  # Run only tagged tasks
 ansible-playbook playbook.yml --tags "install,configure"  # Multiple tags
@@ -347,8 +314,6 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ---
 
 ## Handlers
-
-*Run tasks only when notified by other tasks (usually for service restarts).*
 
 ```yaml
 ---
@@ -361,7 +326,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
         src: app.conf.j2
         dest: /etc/app/app.conf
       notify: Restart app  # Trigger handler by name
-      ## Handler runs once at end of play, even if triggered multiple times
+      # Handler runs once at end of play, even if triggered multiple times
 
     - name: Install package
       apt:
@@ -391,11 +356,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 
 ## Common Modules
 
-*Essential modules for configuration management.*
-
 ### copy
-
-*Copy files to remote hosts.*
 
 ```yaml
 - name: Copy static file
@@ -414,8 +375,6 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 
 ### template
 
-*Process Jinja2 templates and copy to remote hosts.*
-
 ```yaml
 - name: Deploy nginx config
   template:
@@ -428,8 +387,6 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### service / systemd
-
-*Manage services and daemons.*
 
 ```yaml
 - name: Manage service
@@ -448,8 +405,6 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### apt
-
-*Manage packages on Debian/Ubuntu.*
 
 ```yaml
 - name: Install package
@@ -472,8 +427,6 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 
 ### yum
 
-*Manage packages on RedHat/CentOS.*
-
 ```yaml
 - name: Install package
   yum:
@@ -488,29 +441,23 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 
 ### shell
 
-*Execute shell commands with pipes and redirects.*
-
 ```yaml
 - name: Run shell command
   shell: |
     ps aux | grep nginx
     echo "Checking nginx status"
-  ## Runs in /bin/sh; slower than command module but more flexible
+  # Runs in /bin/sh; slower than command module but more flexible
 ```
 
 ### command
 
-*Execute commands without shell processing.*
-
 ```yaml
 - name: Run command
   command: /usr/bin/uptime
-  ## No pipes, redirects, or variables; faster but limited
+  # No pipes, redirects, or variables; faster but limited
 ```
 
 ### user
-
-*Manage user accounts.*
 
 ```yaml
 - name: Create user
@@ -531,8 +478,6 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 
 ### lineinfile
 
-*Modify single lines in files.*
-
 ```yaml
 - name: Add line to file
   lineinfile:
@@ -550,8 +495,6 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 
 ### debug
 
-*Print debug messages.*
-
 ```yaml
 - name: Simple message
   debug:
@@ -561,3 +504,16 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
   debug:
     var: command_output  # Print entire variable
 ```
+
+---
+
+## Pitfalls
+
+- Prefer modules over `shell`/`command`: modules are idempotent, `shell` runs (and reports `changed`) every time. Add `creates:` or `changed_when:` if you must use it.
+- `command` has no pipes, redirections or shell variables: use `shell` only for that.
+- Quote values that start with a variable: `msg: "{{ name }}"`, not `msg: {{ name }}`.
+- Handlers run once, at the end of the play, and only if a task reported `changed`. `meta: flush_handlers` runs them now.
+- Variable precedence: `-e` extra vars win over everything, then host_vars, then group_vars, then role defaults.
+- Tasks that need root need `become: true` (`-K` if sudo asks a password).
+- Test before running everywhere: `--syntax-check`, `--check --diff`, `--limit web1`.
+- Secrets in `ansible-vault`, never `.vault_pass` in Git.

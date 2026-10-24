@@ -28,5 +28,4 @@ Each topic file ends with a **Pitfalls** section.
 
 ## Related
 
-- [Docker](../docker/docker-cheatsheet.md)
 - [LFCS exam page](https://training.linuxfoundation.org/certification/linux-foundation-certified-sysadmin-lfcs/)

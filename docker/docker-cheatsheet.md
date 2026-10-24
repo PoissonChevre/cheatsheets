@@ -7,7 +7,7 @@ Docker runs applications in **containers**. A container is an isolated environme
 - Docs: <https://docs.docker.com>
 - Install: <https://docs.docker.com/engine/install/> (Docker Engine) or <https://docs.docker.com/desktop/> (Docker Desktop)
 - Example projects: <https://github.com/docker/awesome-compose>
-- Networking (all network types): [networking.md](./networking.md)
+- Networking (all network types): [docker-networking.md](./docker-networking.md)
 
 ---
 
@@ -185,7 +185,7 @@ docker network disconnect mynet web
 docker network rm mynet
 ```
 
-All network types (bridge, host, macvlan, ipvlan, overlay, none): see [networking.md](./networking.md).
+All network types (bridge, host, macvlan, ipvlan, overlay, none): see [docker-networking.md](./docker-networking.md).
 
 ---
 
@@ -280,6 +280,18 @@ docker builder prune         # Delete build cache
 docker system prune          # Stopped containers + unused networks + dangling images + build cache
 docker system prune -a --volumes   # Everything unused, volumes included — careful!
 ```
+
+---
+
+## Pitfalls
+
+- A container's data is lost with `docker rm`: use a volume for anything you keep.
+- `-p 3306:3306` listens on **all** interfaces and Docker bypasses ufw/firewalld rules: use `-p 127.0.0.1:3306:3306` for local-only services.
+- Pin image tags (`nginx:1.27`), avoid `latest`.
+- Secrets in `ENV` or in a `RUN` line stay in the image layers (`docker history`): pass them at runtime.
+- `docker compose down -v` and `docker system prune --volumes` delete volume data.
+- Add `USER` in your Dockerfile: containers run as root by default.
+- Use `--rm` for one-shot containers, or stopped containers pile up.
 
 ---
 

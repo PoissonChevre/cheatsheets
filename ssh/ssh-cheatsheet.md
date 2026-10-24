@@ -1,8 +1,10 @@
-# SSH Cheat Sheet
-*Secure Shell protocol for remote login and command execution*
+# SSH — Cheat Sheet
+
+Secure Shell protocol for remote login and command execution.
+
+---
 
 ## Key Management
-*Generate, manage, and organize SSH keys*
 
 ```bash
 ssh-keygen -t ed25519 -C "your@email.com"  # Generate Ed25519 key (recommended)
@@ -15,7 +17,6 @@ ssh-keygen -R hostname  # Remove host key from known_hosts
 ```
 
 ## Connection & Config
-*Connect to hosts and manage SSH configuration*
 
 ```bash
 ssh user@hostname  # Connect to remote host
@@ -33,7 +34,7 @@ Host myserver
     User username
     Port 2222
     IdentityFile ~/.ssh/id_ed25519
-    
+
 Host *
     AddKeysToAgent yes
     IdentitiesOnly yes
@@ -44,7 +45,6 @@ ssh myserver  # Connect using config entry
 ```
 
 ## SCP & rsync
-*Transfer files securely*
 
 ```bash
 scp file.txt user@host:/path/  # Copy file to remote
@@ -57,7 +57,6 @@ rsync -avz -e "ssh -p 2222" dir/ user@host:/path/  # Rsync with custom SSH port
 ```
 
 ## Port Forwarding
-*Route network traffic through SSH tunnel*
 
 ```bash
 ssh -L 8080:localhost:3000 user@host  # Local port forward (machine → host → remote)
@@ -68,7 +67,6 @@ ssh -L 8080:database.internal:5432 user@bastion  # Access internal service throu
 ```
 
 ## Agent & Jump Hosts
-*SSH agent for key management and multi-hop connections*
 
 ```bash
 eval "$(ssh-agent -s)"  # Start SSH agent (sh/bash)
@@ -96,7 +94,6 @@ ssh internal  # Connect through bastion automatically
 ```
 
 ## Hardening Tips
-*Secure SSH configuration practices*
 
 ```bash
 # ~/.ssh/config security settings
@@ -107,7 +104,7 @@ Host *
     PubkeyAuthentication yes  # Enable public key auth
     PasswordAuthentication no  # Disable password auth (use keys)
     ChallengeResponseAuthentication no  # Disable challenge-response
-    
+
 # Server-side (/etc/ssh/sshd_config)
 PermitRootLogin no  # Disable root login
 PasswordAuthentication no  # Require key-based auth
@@ -121,7 +118,6 @@ ssh-keyscan -H hostname >> ~/.ssh/known_hosts  # Pre-verify host key
 ```
 
 ## Troubleshooting
-*Diagnose and fix SSH connection issues*
 
 ```bash
 ssh -v user@host  # Verbose output for debugging
@@ -144,3 +140,15 @@ ssh-keyscan -H hostname >> ~/.ssh/known_hosts
 # "Agent refused operation" → check agent is running
 ssh-add -l  # Shows "Could not open a connection" if agent down
 ```
+
+---
+
+## Pitfalls
+
+- Permissions: `~/.ssh` 700, private keys 600, `authorized_keys` 600. Too open = key ignored.
+- Keep a second session open when you change `sshd_config`, and run `sshd -t` before reloading.
+- Disable password login only after key login works.
+- "Host key changed" warning: check why before `ssh-keygen -R host`.
+- Agent forwarding (`-A`) to an untrusted server exposes your keys: prefer `ProxyJump` (`-J`).
+- `scp -P` (uppercase), `ssh -p` (lowercase).
+- `Match` blocks go at the end of `sshd_config`.
