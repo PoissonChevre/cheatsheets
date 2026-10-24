@@ -1,8 +1,10 @@
 # VS Code Cheat Sheet (Linux)
-*Code editor by Microsoft — Linux shortcuts, CLI, config files and remote development*
+
+Code editor by Microsoft — Linux shortcuts, CLI, config files and remote development
 
 ## Install & Update
-*Install from Microsoft's repository (Debian/Ubuntu)*
+
+Install from Microsoft's repository (Debian/Ubuntu)
 
 ```bash
 sudo apt install ./code_*_amd64.deb  # Install downloaded .deb (also adds Microsoft apt repo)
@@ -12,7 +14,8 @@ sudo apt update && sudo apt upgrade code  # Update through the repo
 ```
 
 ## Essential Shortcuts
-*Most useful keys — Ctrl+K Ctrl+S shows and edits all of them*
+
+Most useful keys — Ctrl+K Ctrl+S shows and edits all of them
 
 ```
 Ctrl+Shift+P   Command palette (everything is here)
@@ -28,7 +31,8 @@ Ctrl+Shift+T   Reopen closed file
 ```
 
 ## Editing
-*Lines, comments, multi-cursor*
+
+Lines, comments, multi-cursor
 
 ```
 Alt+↑ / ↓          Move line up/down
@@ -45,7 +49,8 @@ Alt+Z              Toggle word wrap
 ```
 
 ## Navigation & Search
-*Move around the code and the project*
+
+Move around the code and the project
 
 ```
 Ctrl+G             Go to line
@@ -60,7 +65,8 @@ Ctrl+Shift+V       Markdown preview
 ```
 
 ## Command Line
-*The `code` command*
+
+The `code` command
 
 ```bash
 code .  # Open current folder
@@ -77,7 +83,8 @@ code --disable-extensions  # Start without extensions (debug)
 ```
 
 ## Config Files
-*Where VS Code stores your settings on Linux*
+
+Where VS Code stores your settings on Linux
 
 ```bash
 ~/.config/Code/User/settings.json  # User settings
@@ -89,6 +96,7 @@ code --disable-extensions  # Start without extensions (debug)
 ```
 
 **settings.json example:**
+
 ```jsonc
 {
   "editor.formatOnSave": true,
@@ -100,7 +108,8 @@ code --disable-extensions  # Start without extensions (debug)
 ```
 
 ## Remote Development
-*Edit files on a server, VM or container as if they were local*
+
+Edit files on a server, VM or container as if they were local
 
 ```bash
 # Extension "Remote - SSH" → uses your ~/.ssh/config hosts
@@ -110,7 +119,8 @@ code --remote ssh-remote+myserver /home/user/project  # Open remote folder from 
 ```
 
 ## Useful Extensions (DevOps)
-*Install with `code --install-extension <id>`*
+
+Install with `code --install-extension <id>`
 
 ```bash
 ms-vscode-remote.remote-ssh  # Remote SSH
@@ -125,7 +135,8 @@ eamodio.gitlens  # Git history and blame
 ```
 
 ## Troubleshooting
-*Common Linux issues*
+
+Common Linux issues
 
 ```bash
 # "Unable to watch for file changes" → raise inotify limit
@@ -139,6 +150,7 @@ code --password-store=gnome-libsecret
 ```
 
 ## References
+
 - [VS Code on Linux](https://code.visualstudio.com/docs/setup/linux)
 - [Keyboard shortcuts for Linux (PDF)](https://code.visualstudio.com/shortcuts/keyboard-shortcuts-linux.pdf)
 - [Command line interface](https://code.visualstudio.com/docs/editor/command-line)
