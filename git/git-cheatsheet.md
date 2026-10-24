@@ -1,8 +1,10 @@
 # Git Cheat Sheet
-*Distributed version control system for tracking code changes*
+
+Distributed version control system for tracking code changes
 
 ## Setup & Config
-*Configure git identity and defaults*
+
+Configure git identity and defaults
 
 ```bash
 git config --global user.name "Your Name"  # Set global username
@@ -13,7 +15,8 @@ git config --global alias.st status  # Create command alias
 ```
 
 ## Init & Clone
-*Initialize or copy repositories*
+
+Initialize or copy repositories
 
 ```bash
 git init  # Create new local repository
@@ -24,7 +27,8 @@ git clone --branch <branch> <url>  # Clone specific branch
 ```
 
 ## Staging & Commits
-*Stage changes and record snapshots*
+
+Stage changes and record snapshots
 
 ```bash
 git add <file>  # Stage specific file
@@ -39,7 +43,8 @@ git commit --amend  # Modify last commit (don't push after!)
 ```
 
 ## Branching
-*Create and manage branches*
+
+Create and manage branches
 
 ```bash
 git branch  # List local branches
@@ -54,7 +59,8 @@ git branch -v  # Show last commit per branch
 ```
 
 ## Merging & Rebase
-*Integrate changes from different branches*
+
+Integrate changes from different branches
 
 ```bash
 git merge <branch>  # Merge branch into current branch
@@ -67,7 +73,8 @@ git rebase --continue  # Continue after resolving conflicts
 ```
 
 ## Remotes
-*Manage remote repository connections*
+
+Manage remote repository connections
 
 ```bash
 git remote  # List remote names
@@ -83,7 +90,8 @@ git fetch --all  # Fetch from all remotes
 ```
 
 ## Undoing
-*Undo changes at various stages*
+
+Undo changes at various stages
 
 ```bash
 git restore <file>  # Discard changes in working directory
@@ -96,7 +104,8 @@ git clean -fd  # Remove untracked files and directories
 ```
 
 ## Stash
-*Temporarily save work in progress*
+
+Temporarily save work in progress
 
 ```bash
 git stash  # Save uncommitted changes
@@ -109,7 +118,8 @@ git stash drop stash@{0}  # Delete specific stash
 ```
 
 ## Log & Diff
-*View history and changes*
+
+View history and changes
 
 ```bash
 git log  # Show commit history
@@ -125,7 +135,8 @@ git show <commit>  # Show specific commit details
 ```
 
 ## Tags
-*Mark important points in history*
+
+Mark important points in history
 
 ```bash
 git tag  # List tags
@@ -138,7 +149,8 @@ git push origin --delete <tag>  # Delete remote tag
 ```
 
 ## Advanced
-*Complex operations for experienced users*
+
+Complex operations for experienced users
 
 ```bash
 git cherry-pick <commit>  # Apply specific commit to current branch
