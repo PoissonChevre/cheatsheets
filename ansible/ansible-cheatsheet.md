@@ -1,9 +1,11 @@
-# 🔧 Ansible — Cheat Sheet
+# Ansible — Cheat Sheet  
+
 *Infrastructure automation and configuration management using agentless push-based orchestration.*
 
 ---
 
-## 📋 Inventory
+## Inventory  
+
 *Define hosts, groups, and variables for target systems.*
 
 ```ini
@@ -35,6 +37,7 @@ all:
 ```
 
 ## Host patterns
+
 [Learn more in playbooks: use patterns to target specific groups or hosts]
 
 ```bash
@@ -46,7 +49,8 @@ ansible '!web1' -i inventory.ini -m ping  # All except web1
 
 ---
 
-## ⚡ Ad-hoc Commands
+## Ad-hoc Commands
+
 *Run single tasks directly without playbooks.*
 
 ```bash
@@ -80,7 +84,7 @@ ansible webservers -i inventory.ini --become -m shell -a "whoami"  # Run with su
 
 ---
 
-## 📝 Playbooks
+## Playbooks
 *Structured automation using YAML syntax.*
 
 ```yaml
@@ -131,6 +135,7 @@ ansible webservers -i inventory.ini --become -m shell -a "whoami"  # Run with su
 ```
 
 ## Playbook execution
+
 [Run playbooks with ansible-playbook command]
 
 ```bash
@@ -147,7 +152,8 @@ ansible-playbook playbook.yml --start-at-task "Install nginx"  # Resume from tas
 
 ---
 
-## 🔀 Variables & Facts
+## Variables & Facts
+
 *Define and use variables; access system facts.*
 
 ```yaml
@@ -199,6 +205,7 @@ ansible-playbook playbook.yml --start-at-task "Install nginx"  # Resume from tas
 ```
 
 ## Variable precedence
+
 [Higher precedence overrides lower: CLI args > vars_files > vars > defaults]
 
 ```yaml
@@ -218,7 +225,8 @@ ansible-playbook playbook.yml --start-at-task "Install nginx"  # Resume from tas
 
 ---
 
-## 🎭 Roles
+## Roles
+
 *Organize tasks, handlers, vars, and templates in reusable packages.*
 
 ```bash
@@ -264,7 +272,8 @@ webserver/
 
 ---
 
-## 🔐 Vault
+## Vault
+
 *Encrypt sensitive data like passwords and keys.*
 
 ```bash
@@ -289,7 +298,8 @@ api_key: "sk-1234567890"
 
 ---
 
-## 🏷️ Tags
+## Tags
+
 *Run only specific tasks or skip groups of tasks.*
 
 ```yaml
@@ -324,6 +334,7 @@ api_key: "sk-1234567890"
 ```
 
 ## Tag usage
+
 [Control which tasks run via --tags and --skip-tags]
 
 ```bash
@@ -335,7 +346,8 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 
 ---
 
-## 🔔 Handlers
+## Handlers
+
 *Run tasks only when notified by other tasks (usually for service restarts).*
 
 ```yaml
@@ -377,10 +389,12 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 
 ---
 
-## 📦 Common Modules
+## Common Modules
+
 *Essential modules for configuration management.*
 
 ### copy
+
 *Copy files to remote hosts.*
 
 ```yaml
@@ -399,6 +413,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### template
+
 *Process Jinja2 templates and copy to remote hosts.*
 
 ```yaml
@@ -413,6 +428,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### service / systemd
+
 *Manage services and daemons.*
 
 ```yaml
@@ -432,6 +448,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### apt
+
 *Manage packages on Debian/Ubuntu.*
 
 ```yaml
@@ -454,6 +471,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### yum
+
 *Manage packages on RedHat/CentOS.*
 
 ```yaml
@@ -469,6 +487,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### shell
+
 *Execute shell commands with pipes and redirects.*
 
 ```yaml
@@ -480,6 +499,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### command
+
 *Execute commands without shell processing.*
 
 ```yaml
@@ -489,6 +509,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### user
+
 *Manage user accounts.*
 
 ```yaml
@@ -509,6 +530,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### lineinfile
+
 *Modify single lines in files.*
 
 ```yaml
@@ -527,6 +549,7 @@ ansible-playbook playbook.yml --tags never --tags restart  # Force never-run tag
 ```
 
 ### debug
+
 *Print debug messages.*
 
 ```yaml
