@@ -13,6 +13,7 @@ Linux system administration commands, organized by topic. Tested on Ubuntu and R
 | [networking.md](./networking.md) | Interfaces, routing, DNS, Netplan, nmcli, bonding, NTP, SSH | Networking |
 | [firewall.md](./firewall.md) | ufw, firewalld (zones, rich rules, NAT), tool comparison | Networking |
 | [iptables-nftables.md](./iptables-nftables.md) | Tables, chains, rules, NAT, sets, persistence, migration | Networking |
+| [fail2ban.md](./fail2ban.md) | Jails, jail.local, ban and unban, logs, custom filter | — |
 | [storage.md](./storage.md) | Partitions, filesystems, fstab, LVM, swap, RAID, quotas, LUKS | Storage |
 | [services.md](./services.md) | Nginx, Apache, NFS, Samba, BIND, rsyslog, auditd, VMs, build from source | Service Configuration |
 | [utilities.md](./utilities.md) | curl, wget, jq, rsync, nc, nmap, lsof, strace, htop, fzf | — |

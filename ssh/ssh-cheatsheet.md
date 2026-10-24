@@ -113,6 +113,8 @@ Port 2222  # Use non-standard port
 AllowUsers user1 user2  # Whitelist specific users
 ```
 
+Block brute-force attempts: [Fail2ban](../linux/fail2ban.md).
+
 ```bash
 ssh-keyscan -H hostname >> ~/.ssh/known_hosts  # Pre-verify host key
 ```

@@ -2,7 +2,7 @@
 
 ufw and firewalld (front ends), plus a comparison with nftables.
 
-[← Back to index](./README.md) · iptables, nftables, NAT: [iptables-nftables.md](./iptables-nftables.md)
+[← Back to index](./README.md) · iptables, nftables, NAT: [iptables-nftables.md](./iptables-nftables.md) · Ban IPs: [fail2ban.md](./fail2ban.md)
 
 ---
 

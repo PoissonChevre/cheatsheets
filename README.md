@@ -43,6 +43,7 @@ with a short comment explaining what it does.
 | GRUB and boot | [grub.md](./linux/grub.md) | Boot process, kernel parameters, rescue, root password reset |
 | SELinux | [selinux.md](./linux/selinux.md) | Contexts, labels, ports, booleans, troubleshooting |
 | Firewall | [firewall.md](./linux/firewall.md) · [iptables-nftables.md](./linux/iptables-nftables.md) | ufw, firewalld, iptables, nftables, NAT |
+| Fail2ban | [fail2ban.md](./linux/fail2ban.md) | Jails, ban and unban, custom filters |
 | SSH | [ssh-cheatsheet.md](./ssh/ssh-cheatsheet.md) | Keys, port forwarding, agent, hardening |
 | OpenSSL | [openssl-cheatsheet.md](./openssl/openssl-cheatsheet.md) | Inspect certs, test TLS servers, CSR, self-signed, small CA, convert |
 | Tailscale | [tailscale-cheatsheet.md](./tailscale/tailscale-cheatsheet.md) | Subnet router, exit node, Tailscale SSH |
