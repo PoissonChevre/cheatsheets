@@ -1,0 +1,174 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# Vagrantfile template — multi-VM lab
+#
+# Usage:
+#   vagrant up                 # create and start all VMs
+#   vagrant up node1           # start only one VM
+#   vagrant ssh node1          # connect to a VM
+#   vagrant provision          # run provisioning again
+#   vagrant destroy -f         # delete all VMs
+#
+# Provider choice (VirtualBox by default):
+#   VAGRANT_DEFAULT_PROVIDER=libvirt vagrant up
+
+# ---------------------------------------------------------------------------
+# Global settings — change these values first
+# ---------------------------------------------------------------------------
+
+# Box (VM image). Check that it supports your provider.
+# Note: HCP Vagrant registry closes in 2027 — keep a local copy of your boxes.
+BOX_NAME    = "bento/ubuntu-24.04"
+BOX_VERSION = nil                  # e.g. "202510.26.0" to pin a version, nil = latest
+BOX_URL     = nil                  # e.g. "file:///srv/boxes/ubuntu.box" for a self-hosted box
+
+DOMAIN      = "lab.local"
+NETWORK     = "192.168.56"         # VirtualBox host-only range is 192.168.56.0/21 by default
+
+# One line per VM
+VMS = [
+  { name: "node1", ip: "#{NETWORK}.11", cpus: 2, memory: 2048 },
+  { name: "node2", ip: "#{NETWORK}.12", cpus: 1, memory: 1024 },
+  # { name: "node3", ip: "#{NETWORK}.13", cpus: 1, memory: 1024 },
+]
+
+# Plugins needed by this file (optional, Vagrant asks to install them)
+# config.vagrant.plugins = ["vagrant-libvirt"]
+
+Vagrant.configure("2") do |config|
+
+  # -------------------------------------------------------------------------
+  # Settings shared by all VMs
+  # -------------------------------------------------------------------------
+  config.vm.box         = BOX_NAME
+  config.vm.box_version = BOX_VERSION if BOX_VERSION
+  config.vm.box_url     = BOX_URL if BOX_URL
+  config.vm.box_check_update = false
+
+  # SSH
+  config.ssh.insert_key = true       # replace the insecure default key with a new one
+  config.ssh.forward_agent = true    # use your local SSH keys inside the VM (git clone, etc.)
+
+  # Shared folder: project folder -> /vagrant in the VM
+  config.vm.synced_folder ".", "/vagrant"
+  # Disable it if you don't need it (faster, fewer problems with libvirt):
+  # config.vm.synced_folder ".", "/vagrant", disabled: true
+  # Extra shared folder example:
+  # config.vm.synced_folder "./data", "/opt/data", create: true
+
+  # Time to wait for the VM to boot
+  config.vm.boot_timeout = 600
+
+  # -------------------------------------------------------------------------
+  # Provider: VirtualBox
+  # -------------------------------------------------------------------------
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.linked_clone = true           # faster creation, uses less disk
+    vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+  end
+
+  # -------------------------------------------------------------------------
+  # Provider: libvirt / KVM (needs the vagrant-libvirt plugin)
+  # -------------------------------------------------------------------------
+  config.vm.provider "libvirt" do |lv|
+    lv.driver = "kvm"
+    lv.cpu_mode = "host-passthrough"
+    lv.disk_bus = "virtio"
+    lv.nic_model_type = "virtio"
+    lv.graphics_type = "none"
+  end
+
+  # -------------------------------------------------------------------------
+  # Provisioning shared by all VMs (runs at the first "vagrant up")
+  # -------------------------------------------------------------------------
+  config.vm.provision "common", type: "shell", inline: <<-SHELL
+    set -euo pipefail
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -qq
+    apt-get install -y -qq curl vim git htop net-tools
+    timedatectl set-timezone Europe/Brussels
+  SHELL
+
+  # Add all VMs to /etc/hosts so they can talk with their names
+  hosts_entries = VMS.map { |vm| "#{vm[:ip]} #{vm[:name]}.#{DOMAIN} #{vm[:name]}" }.join("\n")
+  config.vm.provision "hosts", type: "shell", inline: <<-SHELL
+    sed -i '/#{DOMAIN}/d' /etc/hosts
+    echo "#{hosts_entries}" >> /etc/hosts
+  SHELL
+
+  # -------------------------------------------------------------------------
+  # One block per VM
+  # -------------------------------------------------------------------------
+  VMS.each_with_index do |vm_conf, index|
+    config.vm.define vm_conf[:name], primary: index.zero? do |node|
+
+      node.vm.hostname = "#{vm_conf[:name]}.#{DOMAIN}"
+
+      # --- Network ---
+      # Private network: fixed IP, reachable from the host and the other VMs
+      node.vm.network "private_network", ip: vm_conf[:ip]
+
+      # Port forwarding: host port -> VM port (only on the first VM here)
+      if index.zero?
+        node.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
+      end
+
+      # Public network: the VM gets an IP on your LAN (asks which interface)
+      # node.vm.network "public_network"
+      # node.vm.network "public_network", bridge: "enp0s31f6"
+
+      # --- Resources ---
+      node.vm.provider "virtualbox" do |vb|
+        vb.name   = vm_conf[:name]
+        vb.cpus   = vm_conf[:cpus]
+        vb.memory = vm_conf[:memory]
+      end
+
+      node.vm.provider "libvirt" do |lv|
+        lv.cpus   = vm_conf[:cpus]
+        lv.memory = vm_conf[:memory]
+        # Extra disk (e.g. for Longhorn, Ceph, LVM labs)
+        # lv.storage :file, size: "20G"
+      end
+
+      # --- Provisioning for this VM only ---
+      # External script with arguments
+      # node.vm.provision "shell", path: "scripts/setup.sh", args: [vm_conf[:name]]
+
+      # Script that runs at every "vagrant up", not only the first one
+      # node.vm.provision "shell", run: "always", inline: "echo Hello from #{vm_conf[:name]}"
+    end
+  end
+
+  # -------------------------------------------------------------------------
+  # Ansible provisioning — runs once, after the last VM is up
+  # (needs Ansible installed on the host; use "ansible_local" otherwise)
+  # -------------------------------------------------------------------------
+  # config.vm.define VMS.last[:name] do |last|
+  #   last.vm.provision "ansible" do |ansible|
+  #     ansible.playbook       = "ansible/site.yml"
+  #     ansible.limit          = "all"
+  #     ansible.compatibility_mode = "2.0"
+  #     ansible.groups = {
+  #       "masters" => [VMS.first[:name]],
+  #       "workers" => VMS.drop(1).map { |vm| vm[:name] },
+  #     }
+  #     ansible.extra_vars = { domain: DOMAIN }
+  #   end
+  # end
+
+  # -------------------------------------------------------------------------
+  # Triggers: run commands on the host before/after Vagrant actions
+  # -------------------------------------------------------------------------
+  config.trigger.after :up do |t|
+    t.info = "VM is ready. Connect with: vagrant ssh <name>"
+  end
+
+  # config.trigger.before :destroy do |t|
+  #   t.warn = "Saving data before destroy..."
+  #   t.run_remote = { inline: "tar czf /vagrant/backup.tgz /etc" }
+  # end
+end
