@@ -47,6 +47,13 @@ with a short comment explaining what it does.
 | OpenSSL | [openssl-cheatsheet.md](./openssl/openssl-cheatsheet.md) | Inspect certs, test TLS servers, CSR, self-signed, small CA, convert |
 | Tailscale | [tailscale-cheatsheet.md](./tailscale/tailscale-cheatsheet.md) | Subnet router, exit node, Tailscale SSH |
 
+## Monitoring
+
+| Tool | Cheat sheet | Covers |
+|------|-------------|--------|
+| Monitoring | [monitoring/](./monitoring/README.md) | Checks vs metrics, vocabulary |
+| Nagios | [nagios-cheatsheet.md](./monitoring/nagios-cheatsheet.md) | Plugins, states, hosts and services, NRPE, custom check |
+
 ## Scripting and tools
 
 | Tool | Cheat sheet | Covers |
