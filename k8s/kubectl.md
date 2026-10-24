@@ -137,7 +137,7 @@ kubectl delete pods -l app=web
 kubectl label pod web env=prod
 kubectl label pod web env=dev --overwrite
 kubectl label pod web env-                       # Remove the label
-kubectl annotate deploy web owner=renaud
+kubectl annotate deploy web owner=team-web
 kubectl label node worker-1 disktype=ssd
 ```
 

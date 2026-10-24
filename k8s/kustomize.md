@@ -81,7 +81,7 @@ labels:
       env: prod
 
 commonAnnotations:
-  owner: renaud
+  owner: team-web
 
 images:
   - name: web                        # Image name used in the base
