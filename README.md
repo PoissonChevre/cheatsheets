@@ -1,4 +1,4 @@
-# DevOps Cheat Sheets
+# Cheat Sheets
 
 My cheat sheets for the DevOps, Linux and cloud tools I use. I built them while
 preparing the CKA and LFCS, drafting with an AI assistant (Claude) and keeping
