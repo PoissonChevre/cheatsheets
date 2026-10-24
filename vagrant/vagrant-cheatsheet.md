@@ -4,7 +4,7 @@ Vagrant creates and manages virtual machines from one file, the `Vagrantfile`. E
 
 ![Vagrant workflow](./images/vagrant1.png)
 
-Full commented example: [templates/Vagrantfile](./templates/Vagrantfile)
+Example lab with 2 VMs: [templates/Vagrantfile](./templates/Vagrantfile)
 
 ---
 

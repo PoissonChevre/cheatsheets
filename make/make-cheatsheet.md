@@ -68,25 +68,17 @@ ENV=prod make deploy          # Environment variable (works with ?=)
 | `?=` | Only if not already set (env or command line) |
 | `+=` | Append |
 
-### Required variable
-
-```makefile
-deploy:
-	@test -n "$(ENV)" || (echo "ENV is required: make deploy ENV=prod" && exit 1)
-```
-
 ---
 
-## Self-documenting help
+## Help target
 
-Write `## description` after each target: `make` (or `make help`) lists them.
+Put `help` first: `make` alone then shows the list of tasks.
 
 ```makefile
-.DEFAULT_GOAL := help
-
-help: ## Show this help
-	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
-	  awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
+help:
+	@echo "make plan     Show Terraform changes"
+	@echo "make apply    Apply Terraform changes"
+	@echo "make deploy   Deploy the app to Kubernetes"
 ```
 
 ---
@@ -94,69 +86,43 @@ help: ## Show this help
 ## DevOps template
 
 ```makefile
-SHELL := /bin/bash
-.SHELLFLAGS := -eu -o pipefail -c        # Stop on errors, unset vars, failed pipes
-.DEFAULT_GOAL := help
+ENV ?= dev
+TAG ?= latest
+IMAGE = ghcr.io/poissonchevre/web
 
-ENV   ?= dev
-TAG   ?= $(shell git rev-parse --short HEAD)
-IMAGE := ghcr.io/poissonchevre/web
-TF    := terraform -chdir=terraform/$(ENV)
+.PHONY: help plan apply build push deploy
 
-.PHONY: help init plan apply destroy fmt lint build push deploy logs clean
+help:
+	@echo "make plan     terraform plan   (ENV=dev or prod)"
+	@echo "make apply    terraform apply"
+	@echo "make build    build the Docker image"
+	@echo "make push     push the image to GHCR"
+	@echo "make deploy   deploy to Kubernetes"
 
-help: ## Show this help
-	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
-	  awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'
+plan:
+	cd terraform/$(ENV) && terraform plan
 
-# --- Terraform ---
-init: ## terraform init
-	$(TF) init
+apply:
+	cd terraform/$(ENV) && terraform apply
 
-plan: ## terraform plan (ENV=dev|prod)
-	$(TF) plan -out=tfplan
-
-apply: plan ## terraform apply (runs plan first)
-	$(TF) apply tfplan
-
-destroy: ## terraform destroy (asks for confirmation)
-	$(TF) destroy
-
-# --- Quality ---
-fmt: ## Format Terraform files
-	terraform fmt -recursive
-
-lint: ## Check formatting and YAML
-	terraform fmt -check -recursive
-	yamllint .
-
-# --- Container ---
-build: ## Build the image
+build:
 	docker build -t $(IMAGE):$(TAG) .
 
-push: build ## Push the image to GHCR
+push: build
 	docker push $(IMAGE):$(TAG)
 
-# --- Kubernetes ---
-deploy: ## Deploy to the cluster (ENV=dev|prod)
+deploy:
 	kubectl apply -k k8s/overlays/$(ENV)
-	kubectl rollout status deploy/web -n $(ENV)
-
-logs: ## Follow the app logs
-	kubectl logs -f deploy/web -n $(ENV)
-
-clean: ## Remove local build files
-	rm -rf terraform/*/.terraform terraform/*/tfplan
 ```
 
 ```bash
-make              # List the tasks
+make                     # Shows the help
 make plan ENV=prod
 make push TAG=1.2.0
-make -n deploy    # Show the commands without running them
+make -n deploy           # Show the commands without running them
 ```
 
-`apply: plan` = `plan` runs first. Dependencies are the way to chain tasks.
+`push: build` = `build` runs first. Dependencies are the way to chain tasks.
 
 ---
 
