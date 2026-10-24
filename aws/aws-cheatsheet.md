@@ -1,8 +1,10 @@
 # AWS CLI Cheat Sheet
-*Manage Amazon Web Services from the terminal with the `aws` command (CLI v2)*
+
+Manage Amazon Web Services from the terminal with the `aws` command (CLI v2)
 
 ## Install & Configure
-*Install the CLI and set credentials*
+
+Install the CLI and set credentials
 
 ```bash
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
@@ -22,7 +24,8 @@ export AWS_PROFILE=lab AWS_REGION=eu-west-3  # Use profile and region for this s
 ```
 
 ## Output & Queries
-*Format and filter results*
+
+Format and filter results
 
 ```bash
 aws ec2 describe-instances --output table  # Output as table (also: json, text, yaml)
@@ -33,7 +36,8 @@ aws ec2 describe-regions --query "Regions[].RegionName" --output text  # List re
 ```
 
 ## EC2 (Virtual Machines)
-*Launch and manage instances*
+
+Launch and manage instances
 
 ```bash
 aws ec2 create-key-pair --key-name lab-key --query KeyMaterial --output text > lab-key.pem
@@ -50,7 +54,8 @@ aws ssm start-session --target i-xxxx  # Shell without SSH/open port (needs SSM 
 ```
 
 ## Networking (VPC)
-*VPCs, subnets and security groups*
+
+VPCs, subnets and security groups
 
 ```bash
 aws ec2 describe-vpcs --output table  # List VPCs (one default VPC per region)
@@ -64,7 +69,8 @@ aws ec2 authorize-security-group-ingress --group-id sg-xxxx --protocol tcp --por
 ```
 
 ## S3 (Object Storage)
-*Buckets and files*
+
+Buckets and files
 
 ```bash
 aws s3 ls  # List buckets
@@ -79,7 +85,8 @@ aws s3api put-bucket-versioning --bucket bucket --versioning-configuration Statu
 ```
 
 ## IAM
-*Users, roles and policies*
+
+Users, roles and policies
 
 ```bash
 aws iam list-users --output table  # List users
@@ -92,7 +99,8 @@ aws iam list-roles --query "Roles[].RoleName" --output text  # List roles
 ```
 
 ## CloudFormation (IaC)
-*Deploy stacks from templates*
+
+Deploy stacks from templates
 
 ```bash
 aws cloudformation deploy --template-file stack.yaml --stack-name lab \
@@ -102,7 +110,8 @@ aws cloudformation delete-stack --stack-name lab  # Delete stack and its resourc
 ```
 
 ## Monitoring & Cost
-*Logs, audit and spending*
+
+Logs, audit and spending
 
 ```bash
 aws logs tail /aws/lambda/my-func --follow  # Stream CloudWatch logs
@@ -112,7 +121,8 @@ aws ce get-cost-and-usage --time-period Start=2026-10-01,End=2026-10-16 \
 ```
 
 ## Azure ↔ AWS
-*Equivalent services*
+
+Equivalent services
 
 ```
 Subscription         → Account              Management Group → Organizations OU
@@ -132,7 +142,8 @@ Azure Policy         → SCP / AWS Config     Backup / ASR → AWS Backup / Elas
 ```
 
 ## Troubleshooting
-*Common errors*
+
+Common errors
 
 ```bash
 # "Unable to locate credentials" → run aws configure / aws sso login, or check AWS_PROFILE
@@ -143,6 +154,7 @@ aws ec2 describe-instances --debug  # Full HTTP trace
 ```
 
 ## References
+
 - [AWS CLI v2 documentation](https://docs.aws.amazon.com/cli/latest/userguide/)
 - [AWS CLI command reference](https://awscli.amazonaws.com/v2/documentation/api/latest/index.html)
 - [Filtering output with --query](https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html)
