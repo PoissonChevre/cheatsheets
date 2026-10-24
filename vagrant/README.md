@@ -1,5 +1,7 @@
 # Vagrant — Cheat Sheets
 
+Built from the course [DevOps Journey — Vagrant 101](https://www.youtube.com/watch?v=a6W1hF9CgDQ) (2024) and my own labs.
+
 | File | Content |
 |---|---|
 | [vagrant-cheatsheet.md](./vagrant-cheatsheet.md) | Concepts, lifecycle, Vagrantfile, boxes (HCP registry closing), networking, provisioning, snapshots, multi-machine |
