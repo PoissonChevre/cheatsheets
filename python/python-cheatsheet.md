@@ -1,9 +1,9 @@
-# 🐍 Python — Cheat Sheet
+# Python — Cheat Sheet
 *Versatile, readable programming language for scripting, web, data science, and automation.*
 
 ---
 
-## 📦 Data Types & Variables
+## Data Types & Variables
 *Basic data types and variable assignment.*
 
 ```python
