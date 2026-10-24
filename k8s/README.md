@@ -20,6 +20,7 @@ Each file ends with a **Pitfalls** section.
 
 ## Related
 
+- [Argo CD](../argocd/argocd-cheatsheet.md) · [Talos Linux](../talos/talos-cheatsheet.md) · [YAML](../yaml/yaml-cheatsheet.md)
 - [Docker](../docker/docker-cheatsheet.md)
 - [Linux](../linux/README.md)
 - [Kubernetes docs](https://kubernetes.io/docs/home/) · [kubectl quick reference](https://kubernetes.io/docs/reference/kubectl/quick-reference/)
