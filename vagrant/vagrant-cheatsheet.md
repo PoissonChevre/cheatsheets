@@ -289,6 +289,7 @@ vagrant global-status --prune # Remove stale entries
 
 **Tutorials (English)**  
 
+- [DevOps Journey — Vagrant 101 tutorial](https://www.youtube.com/watch?v=a6W1hF9CgDQ) (video) · [labs](https://github.com/devopsjourney1/vagrant-labs)
 - [devopscube — Vagrant tutorial for beginners](https://devopscube.com/vagrant-tutorial-beginners/)
 - [Installation, setup and cheat sheet](https://learningdevops.hashnode.dev/chapter-3-about-vagrant-installation-and-setup-vagrant-cheat-sheet)
 - [Vagrant libvirt plugin for KVM on Ubuntu](https://www.youtube.com/watch?v=PywnhhboKyQ) (video)
@@ -301,5 +302,4 @@ vagrant global-status --prune # Remove stale entries
 
 **Examples**  
 
-- [DevOps Journey — Vagrant labs](https://github.com/devopsjourney1/vagrant-labs)
 - [Vagrantfile examples](https://github.com/patrickdlee/vagrant-examples)
