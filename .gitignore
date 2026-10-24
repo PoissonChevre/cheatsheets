@@ -11,3 +11,12 @@
 !.gitignore
 !LICENSE
 !CONTRIBUTING.md
+
+# Images for READMEs
+!*.png
+!*.jpg
+!*.svg
+!*.gif
+
+# Vagrant files
+!Vagrantfile
