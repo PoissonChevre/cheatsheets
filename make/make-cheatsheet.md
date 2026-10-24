@@ -24,9 +24,9 @@ make build push  # Several targets, in order
 
 ```makefile
 deploy:
-	cd terraform && terraform apply      # ✅ Same line
+	cd terraform && terraform apply      # OK: same line
 	cd terraform
-	terraform apply                      # ❌ Runs in the original folder
+	terraform apply                      # Wrong: runs in the original folder
 ```
 
 ---

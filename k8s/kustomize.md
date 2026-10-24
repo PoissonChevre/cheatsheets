@@ -229,9 +229,9 @@ Useful to patch a chart that has no value for what you need.
 |---|---|---|
 | Method | Templates + values | Plain YAML + patches |
 | Install | Separate binary | Inside kubectl |
-| Third-party apps | ✅ Most apps ship a chart | Rare |
-| Your own apps | OK, but templates get complex | ✅ Simple, readable |
-| Releases and rollback | ✅ `helm history`, `helm rollback` | No (use Git / ArgoCD) |
+| Third-party apps | Most apps ship a chart | Rare |
+| Your own apps | OK, but templates get complex | Simple, readable |
+| Releases and rollback | `helm history`, `helm rollback` | No (use Git / ArgoCD) |
 | Learning curve | Go templates | Low |
 
 Common choice: **Helm for third-party apps** (Longhorn, Prometheus, cert-manager), **Kustomize for your own apps**. ArgoCD supports both.

@@ -34,7 +34,7 @@ Use `useradd` in scripts and exams: it is predictable. `adduser` asks questions.
 
 ```bash
 usermod -aG dev jack     # ADD to group dev
-usermod -G dev jack      # ⚠ REPLACES all supplementary groups
+usermod -G dev jack      # REPLACES all supplementary groups
 usermod -g rugby jack    # Primary group
 usermod -s /bin/zsh jack
 usermod -d /new/home -m jack   # Change home AND move files (without -m: files stay)

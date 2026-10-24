@@ -79,7 +79,7 @@ kubectl get secret db -o json | jq '.data | map_values(@base64d)'
 | Field of each | `{.items[*].metadata.name}` | `.items[].metadata.name` |
 | Filter | `{.items[?(@.x=="y")]}` | `.items[] \| select(.x=="y")` |
 | Loop + new line | `{range .items[*]}...{"\n"}{end}` | `.items[] \| "..."` |
-| Count, sort, regex | ✗ | `length`, `sort_by`, `test()` |
+| Count, sort, regex | No | `length`, `sort_by`, `test()` |
 
 ---
 
