@@ -6,20 +6,14 @@
 
 ## Templates
 
-Scripts to build reusable templates. Run them on the Proxmox host.
+Scripts to build reusable templates.
 
 | Script | Use |
 |---|---|
-| [vm-cloud-init-template.sh](./templates/vm-cloud-init-template.sh) | VM template from a cloud image (Debian, Ubuntu, Rocky...) with cloud-init, optional VLAN and guest agent |
-| [lxc-template-prep.sh](./templates/lxc-template-prep.sh) | Clean a Debian/Ubuntu container before converting it to a template |
+| [vm-cloud-init-template.sh](./templates/vm-cloud-init-template.sh) | VM template from a cloud image, with cloud-init (on the host) |
+| [lxc-template-prep.sh](./templates/lxc-template-prep.sh) | Clean a container before turning it into a template (inside the container) |
 
-```bash
-./templates/vm-cloud-init-template.sh 9000 debian-13 \
-  https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2
-
-VLAN=50 STORAGE=local-zfs ./templates/vm-cloud-init-template.sh 9001 ubuntu-24-04 \
-  https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
-```
+Change the variables at the top of the script, then run it.
 
 ## Resources
 

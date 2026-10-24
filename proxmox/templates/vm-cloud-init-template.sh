@@ -1,78 +1,39 @@
-#!/usr/bin/env bash
-# Create a Proxmox VM template from a cloud image (cloud-init).
-# Run on the Proxmox host as root.
-#
-# Usage:   ./vm-cloud-init-template.sh <vmid> <name> <image-url>
-# Example: ./vm-cloud-init-template.sh 9000 debian-13 \
-#            https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2
-#
-# Options (environment variables):
-#   STORAGE=local-zfs  BRIDGE=vmbr0  VLAN=50  CI_USER=admin  SSH_KEYS=/root/.ssh/authorized_keys
-#   MEMORY=2048  CORES=2  DISK_SIZE=10G
-#
-# Cloud images:
-#   Debian 13    https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2
-#   Debian 12    https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
-#   Ubuntu 24.04 https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
-#   Rocky 9      https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2
-#
-# Based on: apalrd.net/posts/2023/pve_cloud, technotim.live/posts/cloud-init-cloud-image
+#!/bin/bash
+# Proxmox: create a VM template from a cloud image (cloud-init)
+# Run on the Proxmox host as root. Change the variables, then run.
+# Source: https://technotim.live/posts/cloud-init-cloud-image/
 
-set -euo pipefail
+VMID=9000
+NAME=debian-13
+IMAGE_URL=https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2
+STORAGE=local-zfs
+BRIDGE=vmbr0
 
-VMID=${1:?Usage: $0 <vmid> <name> <image-url>}
-NAME=${2:?Usage: $0 <vmid> <name> <image-url>}
-URL=${3:?Usage: $0 <vmid> <name> <image-url>}
+# 1. Download the cloud image
+wget -O /tmp/cloud.img "$IMAGE_URL"
 
-STORAGE=${STORAGE:-local-zfs}
-BRIDGE=${BRIDGE:-vmbr0}
-VLAN=${VLAN:-}
-CI_USER=${CI_USER:-admin}
-SSH_KEYS=${SSH_KEYS:-/root/.ssh/authorized_keys}
-MEMORY=${MEMORY:-2048}
-CORES=${CORES:-2}
-DISK_SIZE=${DISK_SIZE:-10G}
+# 2. Create the VM
+qm create $VMID --name $NAME --memory 2048 --cores 2 --net0 virtio,bridge=$BRIDGE
 
-if qm status "$VMID" &>/dev/null; then
-  echo "VM $VMID already exists" >&2
-  exit 1
-fi
-[[ -f "$SSH_KEYS" ]] || { echo "SSH key file not found: $SSH_KEYS" >&2; exit 1; }
+# 3. Import the image as the VM disk
+qm set $VMID --scsihw virtio-scsi-pci --scsi0 $STORAGE:0,import-from=/tmp/cloud.img
 
-WORKDIR=$(mktemp -d)
-trap 'rm -rf "$WORKDIR"' EXIT
-IMG="$WORKDIR/$(basename "$URL")"
+# 4. Add the cloud-init drive
+qm set $VMID --ide2 $STORAGE:cloudinit
 
-echo "==> Downloading $URL"
-wget -q --show-progress -O "$IMG" "$URL"
+# 5. Boot from the disk, serial console, guest agent
+qm set $VMID --boot order=scsi0 --serial0 socket --vga serial0 --agent enabled=1
 
-# Optional: add the QEMU guest agent to the image (apt install libguestfs-tools)
-if command -v virt-customize &>/dev/null; then
-  echo "==> Installing qemu-guest-agent in the image"
-  virt-customize -a "$IMG" --install qemu-guest-agent --truncate /etc/machine-id
-fi
+# 6. Cloud-init defaults: user, SSH key, DHCP
+qm set $VMID --ciuser admin --sshkeys ~/.ssh/authorized_keys --ipconfig0 ip=dhcp
 
-NET="virtio,bridge=$BRIDGE${VLAN:+,tag=$VLAN}"
+# 7. Turn it into a template (never start the VM before this step)
+qm template $VMID
 
-echo "==> Creating VM $VMID ($NAME)"
-qm create "$VMID" \
-  --name "$NAME" \
-  --ostype l26 \
-  --memory "$MEMORY" --cores "$CORES" --cpu host \
-  --net0 "$NET" \
-  --scsihw virtio-scsi-single \
-  --scsi0 "$STORAGE:0,import-from=$IMG,discard=on,ssd=1" \
-  --boot order=scsi0 \
-  --ide2 "$STORAGE:cloudinit" \
-  --serial0 socket --vga serial0 \
-  --agent enabled=1,fstrim_cloned_disks=1 \
-  --ciuser "$CI_USER" \
-  --sshkeys "$SSH_KEYS" \
-  --ipconfig0 "ip=dhcp"
+# 8. Clean up
+rm /tmp/cloud.img
 
-qm disk resize "$VMID" scsi0 "$DISK_SIZE"
-
-echo "==> Converting $VMID to a template"
-qm template "$VMID"
-
-echo "Done. Clone it with: qm clone $VMID <newid> --name <name> --full"
+# Create a VM from the template:
+#   qm clone 9000 120 --name web1 --full
+#   qm disk resize 120 scsi0 20G
+#   qm start 120
