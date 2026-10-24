@@ -1,10 +1,12 @@
-# 🗄️ SQL / MySQL — Cheat Sheet
-*Relational database management system for data storage, querying, and manipulation.*
+# SQL / MySQL — Cheat Sheet 
+
+Relational database management system for data storage, querying, and manipulation.
 
 ---
 
 ## 👤 Database & User Management
-*Create and manage databases and user accounts.*
+
+Create and manage databases and user accounts.
 
 ```sql
 -- Create database
@@ -52,8 +54,9 @@ SHOW GRANTS FOR 'appuser'@'localhost';  -- List user's permissions
 
 ---
 
-## 📝 DDL — Create, Alter, Drop
-*Define and modify table structure.*
+## DDL — Create, Alter, Drop
+
+Define and modify table structure.
 
 ```sql
 -- Create table
@@ -104,6 +107,7 @@ TRUNCATE TABLE users;  -- Delete all rows but keep structure (faster than DELETE
 ```
 
 ## Data types
+
 [INT, VARCHAR, TEXT, DATE, TIMESTAMP, DECIMAL, JSON, ENUM, SET, BLOB]
 
 ```sql
@@ -124,8 +128,9 @@ CREATE TABLE products (
 
 ---
 
-## 📊 DML — Select, Insert, Update, Delete
-*Query and manipulate data.*
+## DML — Select, Insert, Update, Delete
+
+Query and manipulate data.
 
 ```sql
 -- Select all columns
@@ -172,8 +177,9 @@ DELETE FROM users WHERE id NOT IN (SELECT id FROM users_active);  -- Complex del
 
 ---
 
-## 🔗 Joins
-*Combine data from multiple tables.*
+## Joins
+
+Combine data from multiple tables.
 
 ```sql
 -- INNER JOIN (only matching rows)
@@ -221,8 +227,9 @@ WHERE d.name = 'Engineering' OR d.name IS NULL;
 
 ---
 
-## 📑 Indexes
-*Optimize query performance with indexes.*
+## Indexes
+
+Optimize query performance with indexes.
 
 ```sql
 -- Create index
@@ -253,6 +260,7 @@ EXPLAIN SELECT * FROM users WHERE age > 25;  # Check if index used
 ```
 
 ## Composite index order
+
 [Put most selective columns first for optimal performance]
 
 ```sql
@@ -263,8 +271,9 @@ CREATE INDEX idx_active_age ON users(is_active, age);  -- Correct order
 
 ---
 
-## 💰 Transactions
-*Group statements into atomic operations.*
+## Transactions
+
+Group statements into atomic operations.
 
 ```sql
 -- Basic transaction
@@ -298,6 +307,7 @@ SHOW ENGINE INNODB STATUS;  -- Show InnoDB transaction info (for debugging)
 ```
 
 ## ACID properties
+
 [Atomicity, Consistency, Isolation, Durability ensure data integrity]
 
 ```sql
@@ -311,8 +321,9 @@ COMMIT;
 
 ---
 
-## 🔢 Useful Functions
-*Common aggregate and scalar functions.*
+## Useful Functions
+
+Common aggregate and scalar functions.
 
 ```sql
 -- Aggregate functions (work on groups)
@@ -371,8 +382,9 @@ SELECT COALESCE(phone, email, 'No contact') FROM users;  -- First non-NULL value
 
 ---
 
-## 💾 Backup & Restore
-*Export and import databases.*
+## Backup & Restore
+
+Export and import databases.
 
 ```bash
 # Backup entire database
@@ -401,6 +413,7 @@ mysql -u root -p < myapp_backup.sql --no-data  # Validate syntax only
 ```
 
 ## Backup strategy
+
 [Regular incremental backups, test restores, verify integrity]
 
 ```bash
@@ -413,8 +426,9 @@ find /backups -name "myapp_*.sql.gz" -mtime +30 -delete  # Delete backups older 
 
 ---
 
-## 🔍 Performance Optimization
-*Common query tuning techniques.*
+## Performance Optimization
+
+Common query tuning techniques.
 
 ```sql
 -- Check query execution plan
