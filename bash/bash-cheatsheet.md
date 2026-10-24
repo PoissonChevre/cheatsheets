@@ -1,10 +1,12 @@
-# 📜 Bash — Cheat Sheet
-*POSIX-compliant shell scripting language for Unix/Linux automation and command execution.*
+# Bash — Cheat Sheet
+
+POSIX-compliant shell scripting language for Unix/Linux automation and command execution.
 
 ---
 
-## 🔤 Variables & Quoting
-*Define and use variables with proper quoting.*
+## Variables & Quoting
+
+Define and use variables with proper quoting.
 
 ```bash
 name="Alice"  # Variable assignment (no spaces around =)
@@ -44,8 +46,9 @@ echo $((2 + 3 * 4))  # Arithmetic: 14
 
 ---
 
-## ❓ Conditionals
-*If/else statements and test expressions.*
+## Conditionals
+
+If/else statements and test expressions.
 
 ```bash
 # if/elif/else
@@ -87,8 +90,9 @@ esac
 
 ---
 
-## 🔄 Loops
-*Iterate with for, while, and until loops.*
+## Loops
+
+Iterate with for, while, and until loops.
 
 ```bash
 # for loop - range
@@ -141,8 +145,9 @@ done
 
 ---
 
-## 🔧 Functions
-*Define and call reusable functions.*
+## Functions
+
+Define and call reusable functions.
 
 ```bash
 # Function definition
@@ -194,8 +199,9 @@ function print_args() {
 
 ---
 
-## 📦 Arrays
-*Create and manipulate arrays.*
+## Arrays
+
+Create and manipulate arrays.
 
 ```bash
 # Array creation
@@ -233,8 +239,9 @@ unset arr  # Unset entire array
 
 ---
 
-## ✂️ String Manipulation
-*Transform and analyze strings.*
+## String Manipulation
+
+Transform and analyze strings.
 
 ```bash
 str="hello world"
@@ -271,7 +278,8 @@ echo $str | awk '{print $2}'  # Second word
 ```
 
 ## File Tests
-*Test file properties and existence.*
+
+Test file properties and existence.
 
 ```bash
 # File existence and type
@@ -303,8 +311,9 @@ fi
 
 ---
 
-## ⚙️ Process & Job Control
-*Manage background processes and jobs.*
+## Process & Job Control
+
+Manage background processes and jobs.
 
 ```bash
 # Background processes
@@ -338,8 +347,9 @@ killall process_name  # Kill by name
 
 ---
 
-## 🔀 Input/Output & Redirection
-*Redirect and pipe command output.*
+## Input/Output & Redirection
+
+Redirect and pipe command output.
 
 ```bash
 # Redirection
@@ -381,8 +391,9 @@ exec 3>&-  # Close descriptor 3
 
 ---
 
-## ✅ Script Best Practices
-*Write safe, maintainable shell scripts.*
+## Script Best Practices
+
+Write safe, maintainable shell scripts.
 
 ```bash
 #!/bin/bash  # Shebang: specify interpreter
