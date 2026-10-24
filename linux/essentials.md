@@ -120,6 +120,8 @@ sed '/pattern/d' file      # Delete matching lines
 
 ### Regex
 
+The basics. Flavors, lookarounds and sysadmin examples: [regex.md](./regex.md).
+
 | Basic | Meaning | | Extended (`grep -E`) | Meaning |
 |---|---|---|---|---|
 | `.` | Any character | | `+` | 1 or more |

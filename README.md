@@ -52,7 +52,7 @@ with a short comment explaining what it does.
 | Python | [python-cheatsheet.md](./python/python-cheatsheet.md) | Data types, collections, functions, file I/O, stdlib |
 | Git | [git-cheatsheet.md](./git/git-cheatsheet.md) | Branching, merging, remotes, history |
 | Make | [make-cheatsheet.md](./make/make-cheatsheet.md) | Task runner, variables, help target, DevOps Makefile template |
-| Regex | [regex-cheatsheet.md](./regex/regex-cheatsheet.md) | Anchors, quantifiers, groups, lookarounds |
+| Regex | [regex.md](./linux/regex.md) | Flavors (BRE/ERE/PCRE), groups, lookarounds, grep/sed/awk examples |
 | jq and JSONPath | [utilities.md](./linux/utilities.md#jq) · [kubectl-jsonpath.md](./k8s/kubectl-jsonpath.md) | jq filters, kubectl JSONPath, az/aws + jq |
 | MySQL | [mysql-cheatsheet.md](./sql/mysql-cheatsheet.md) | DDL/DML, users, joins, indexes, backup |
 | Vim | [vim-cheatsheet.md](./vim/vim-cheatsheet.md) | Modes, navigation, search/replace, macros |
