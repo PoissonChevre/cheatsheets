@@ -4,7 +4,7 @@
 
 Vagrant is a tool from HashiCorp. It creates and manages virtual machines (VMs). You describe the VM in one file, and Vagrant creates it. Everybody in the team gets the same environment, so the code works the same way on every computer.
 
-![vagrant](./vagrant1.png)
+![vagrant](./images/vagrant1.png)
 
 Creating and configuring VMs by hand takes a lot of time. With Vagrant, you write the configuration of one or more VMs in a `Vagrantfile`. Then you run `vagrant up`, and Vagrant reads the file and creates the VMs.
 
@@ -16,7 +16,7 @@ The `Vagrantfile` contains the configuration of the VM: image, CPU, RAM, network
 - It contains everything: you only need to share this file to create the same VM on another computer.
 - You can save it in Git with your project.
 
-![vagrant3](./vagrant3.png)
+![vagrant3](./images/vagrant3.png)
 
 ## Provisioning
 
@@ -79,7 +79,7 @@ config.vm.box_url = "https://my-server/boxes/package.box"
 
 You use Vagrant only with the [command line](https://developer.hashicorp.com/vagrant/docs/cli).
 
-![vagrant2](./vagrant2.png)
+![vagrant2](./images/vagrant2.png)
 
 | Command | Action |
 |---|---|
