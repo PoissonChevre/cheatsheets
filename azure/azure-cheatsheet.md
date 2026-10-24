@@ -1,8 +1,10 @@
 # Azure CLI Cheat Sheet
+
 *Manage Microsoft Azure resources from the terminal with the `az` command*
 
 ## Install & Login
-*Install the CLI and select a subscription*
+
+Install the CLI and select a subscription
 
 ```bash
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash  # Install on Debian/Ubuntu
@@ -15,7 +17,8 @@ az account show -o table  # Current subscription and tenant
 ```
 
 ## Defaults & Output
-*Save typing and format results*
+
+Save typing and format results
 
 ```bash
 az config set defaults.location=belgiumcentral defaults.group=labo-rg1  # Default region and RG
@@ -27,7 +30,8 @@ az find "az vm create"  # Examples for a command
 ```
 
 ## Resource Groups
-*Containers for resources — deleting the group deletes everything inside*
+
+Containers for resources — deleting the group deletes everything inside
 
 ```bash
 az group create -n labo-rg1 -l belgiumcentral  # Create RG
@@ -37,7 +41,8 @@ az group delete -n labo-rg1 --yes --no-wait  # Delete RG and all its content
 ```
 
 ## Virtual Machines
-*Create, size and power-manage VMs*
+
+Create, size and power-manage VMs
 
 ```bash
 az vm create -g labo-rg1 -n vm1 --image Ubuntu2404 --size Standard_D2als_v6 \
@@ -52,6 +57,7 @@ az vm run-command invoke -g labo-rg1 -n vm1 --command-id RunShellScript --script
 ```
 
 **Sizes, images and quotas:**
+
 ```bash
 az vm list-usage -l belgiumcentral -o table  # vCPU quota per family (0 = unusable)
 az vm list-skus -l belgiumcentral --size Standard_D2 -o table  # Sizes available in region
@@ -59,7 +65,8 @@ az vm image list-skus -l belgiumcentral -p MicrosoftWindowsDesktop -f windows-11
 ```
 
 ## Networking
-*VNets, NSGs, public IPs*
+
+VNets, NSGs, public IPs
 
 ```bash
 az network vnet create -g labo-rg1 -n vnet1 --address-prefix 10.10.0.0/16 \
@@ -75,7 +82,8 @@ az network nic list-effective-nsg -g labo-rg1 -n vm1-nic  # Effective NSG rules
 ```
 
 ## Storage
-*Accounts, blobs and SAS*
+
+Accounts, blobs and SAS
 
 ```bash
 az storage account create -g labo-rg1 -n stlab$RANDOM --sku Standard_LRS  # Storage account (global unique name)
@@ -88,7 +96,8 @@ az storage container generate-sas --account-name <sa> -n data --permissions rl \
 ```
 
 ## Identity & Access
-*Entra ID users and RBAC*
+
+Entra ID users and RBAC
 
 ```bash
 az ad user list --query "[].userPrincipalName" -o tsv  # List users
@@ -100,7 +109,8 @@ az vm identity assign -g labo-rg1 -n vm1  # Enable managed identity on VM
 ```
 
 ## Templates (ARM / Bicep)
-*Infrastructure as Code*
+
+Infrastructure as Code
 
 ```bash
 az deployment group create -g labo-rg1 --template-file main.bicep  # Deploy Bicep or ARM JSON
@@ -113,7 +123,8 @@ az group export -n labo-rg1 > export.json  # Export existing resources as templa
 ```
 
 ## Monitoring & Cost
-*Logs and spending*
+
+Logs and spending
 
 ```bash
 az monitor activity-log list -g labo-rg1 --offset 1d -o table  # Who did what (last 24h)
@@ -122,7 +133,8 @@ az lock create -n nodelete -g labo-rg1 --lock-type CanNotDelete  # Protect RG fr
 ```
 
 ## Troubleshooting
-*Common errors*
+
+Common errors
 
 ```bash
 # SkuNotAvailable → no capacity in region: try another size or region
@@ -132,6 +144,7 @@ az vm list --debug  # Full HTTP trace of a command
 ```
 
 ## References
+
 - [Azure CLI documentation](https://learn.microsoft.com/cli/azure/)
 - [JMESPath queries](https://learn.microsoft.com/cli/azure/query-azure-cli)
 - [Bicep documentation](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)
