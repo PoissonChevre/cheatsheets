@@ -1,10 +1,12 @@
-# 🌍 Terraform — Cheat Sheet
+# Terraform — Cheat Sheet
+
 *Infrastructure as Code tool for provisioning and managing cloud resources declaratively.*
 
 ---
 
-## 🚀 Init & Providers
-*Initialize Terraform configuration and configure cloud provider credentials.*
+## Init & Providers
+
+Initialize Terraform configuration and configure cloud provider credentials.
 
 ```hcl
 terraform init  # Initialize Terraform working directory
@@ -36,8 +38,9 @@ provider "aws" {
 
 ---
 
-## 📝 Variables & Outputs
-*Define input variables and expose computed values.*
+## Variables & Outputs
+
+Define input variables and expose computed values.
 
 ```hcl
 variable "instance_type" {
@@ -80,8 +83,9 @@ terraform output instance_id  # Display specific output value
 
 ---
 
-## 🏗️ Resources & Data Sources
-*Create infrastructure resources and query existing data.*
+## Resources & Data Sources
+
+Create infrastructure resources and query existing data.
 
 ```hcl
 resource "aws_instance" "web" {
@@ -124,8 +128,9 @@ resource "aws_security_group" "web" {
 
 ---
 
-## 💾 State Management
-*Manage Terraform state files and remote state backends.*
+## State Management
+
+Manage Terraform state files and remote state backends.
 
 ```bash
 terraform state list  # List all resources in state
@@ -153,8 +158,9 @@ terraform {
 
 ---
 
-## 📋 Plan & Apply
-*Preview and execute infrastructure changes.*
+## Plan & Apply
+
+Preview and execute infrastructure changes.
 
 ```bash
 terraform plan  # Preview infrastructure changes
@@ -176,8 +182,8 @@ terraform plan -destroy  # Show what would be destroyed
 
 ---
 
-## 📦 Modules
-*Organize and reuse Terraform configuration as modules.*
+## Modules
+Organize and reuse Terraform configuration as modules.
 
 ```hcl
 module "vpc" {
@@ -196,8 +202,9 @@ output "vpc_id" {
 
 ---
 
-## 🗂️ Workspaces
-*Manage multiple isolated state files for same configuration.*
+## Workspaces
+
+Manage multiple isolated state files for same configuration.
 
 ```bash
 terraform workspace list  # List all workspaces
@@ -219,8 +226,9 @@ resource "aws_instance" "web" {
 
 ---
 
-## 🔄 Import & Destroy
-*Bring existing resources into Terraform and remove them.*
+## Import & Destroy
+
+Bring existing resources into Terraform and remove them.
 
 ```bash
 terraform import aws_instance.example i-1234567890abcdef0  # Import existing resource

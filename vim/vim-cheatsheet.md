@@ -1,8 +1,10 @@
 # Vim Cheat Sheet
-*Highly configurable text editor with modal editing paradigm*
+
+Highly configurable text editor with modal editing paradigm
 
 ## Modes
-*Understanding Vim's modal editing*
+
+Understanding Vim's modal editing
 
 ```bash
 vim file.txt  # Open file in vim
@@ -18,7 +20,8 @@ Ctrl+v  # Visual block mode (select columns)
 ```
 
 ## Navigation
-*Move cursor through file*
+
+Move cursor through file
 
 ```bash
 h  # Move left
@@ -44,7 +47,8 @@ Ctrl+u  # Half page up
 ```
 
 ## Editing
-*Insert, change, and delete text*
+
+Insert, change, and delete text
 
 ```bash
 i  # Insert before cursor
@@ -70,7 +74,8 @@ Ctrl+r  # Redo
 ```
 
 ## Search & Replace
-*Find and modify text*
+
+Find and modify text
 
 ```bash
 /pattern  # Search forward
@@ -89,7 +94,8 @@ N  # Previous match
 ```
 
 ## Macros
-*Record and playback command sequences*
+
+Record and playback command sequences
 
 ```bash
 qa  # Start recording macro 'a'
@@ -102,7 +108,8 @@ q  # Stop recording
 ```
 
 ## Splits & Tabs
-*Work with multiple windows and tabs*
+
+Work with multiple windows and tabs
 
 ```bash
 :split filename  # Split horizontally
@@ -123,7 +130,8 @@ gT  # Go to previous tab
 ```
 
 ## Save & Quit
-*Save files and exit vim*
+
+Save files and exit vim
 
 ```bash
 :w  # Save file

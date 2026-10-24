@@ -1,6 +1,6 @@
-# 🛠 Vagrant — Cheat Sheet
+# Vagrant — Cheat Sheet
 
-*Infrastructure provisioning and VM management with Vagrant*
+Infrastructure provisioning and VM management with Vagrant
 
 ---
 

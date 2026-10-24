@@ -1,8 +1,10 @@
 # Tmux Cheat Sheet
-*Terminal multiplexer for managing multiple sessions and windows*
+
+Terminal multiplexer for managing multiple sessions and windows
 
 ## Sessions
-*Create and manage tmux sessions*
+
+Create and manage tmux sessions
 
 ```bash
 tmux new-session -s name  # Create new session
@@ -17,7 +19,8 @@ tmux list-commands  # List all tmux commands
 ```
 
 ## Windows
-*Create and switch between windows within a session*
+
+Create and switch between windows within a session
 
 ```bash
 tmux new-window -t session:1  # Create new window in session
@@ -35,7 +38,8 @@ prefix + &  # Kill current window
 ```
 
 ## Panes
-*Split windows into multiple panes*
+
+Split windows into multiple panes
 
 ```bash
 tmux split-window -h  # Split horizontally
@@ -56,7 +60,8 @@ prefix + z  # Zoom current pane (toggle)
 ```
 
 ## Copy Mode
-*Select, copy, and paste text*
+
+Select, copy, and paste text
 
 ```bash
 # Inside tmux (navigate with vi/emacs keys):
@@ -73,7 +78,8 @@ q  # Exit copy mode
 ```
 
 ## Custom Key Bindings
-*Configure custom shortcuts in ~/.tmux.conf*
+
+Configure custom shortcuts in ~/.tmux.conf
 
 ```bash
 # Rebind prefix key to Ctrl+a
@@ -100,7 +106,8 @@ set -g mouse on
 ```
 
 ## Config Tips
-*Optimize tmux configuration*
+
+Optimize tmux configuration
 
 ```bash
 # ~/.tmux.conf example:
