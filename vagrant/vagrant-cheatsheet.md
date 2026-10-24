@@ -4,7 +4,7 @@
 
 ---
 
-## 📦 Installation & Setup
+## Installation & Setup
 
 ```bash
 vagrant --version # Check Vagrant installation and version
@@ -16,7 +16,7 @@ vagrant box remove hashicorp/bionic # Remove a box from local storage
 
 ---
 
-## 🚀 VM Lifecycle
+## VM Lifecycle
 
 ```bash
 vagrant up # Create and start VM(s) defined in Vagrantfile
@@ -34,7 +34,7 @@ vagrant destroy -f # Force destroy without confirmation
 
 ---
 
-## 🔌 SSH & Access
+## SSH & Access
 
 ```bash
 vagrant ssh # Connect to VM via SSH
@@ -45,7 +45,7 @@ vagrant port # Display port mappings
 
 ---
 
-## 📄 Vagrantfile Configuration
+## Vagrantfile Configuration
 
 ```ruby
 # Basic Vagrantfile structure
@@ -85,7 +85,7 @@ end
 
 ---
 
-## 🌐 Networking
+## Networking
 
 ```ruby
 # Private network (host-only, accessible only from host)
@@ -103,7 +103,7 @@ config.vm.network "forwarded_ports", guest: 443, host: 8443, protocol: "tcp"
 
 ---
 
-## 🔧 Provisioning
+## Provisioning
 
 ```bash
 vagrant provision # Run provisioners on running VM
@@ -128,7 +128,7 @@ end
 
 ---
 
-## 📸 Snapshots
+## Snapshots
 
 ```bash
 vagrant snapshot save # Save VM state with default name
@@ -141,7 +141,7 @@ vagrant snapshot delete --all # Delete all snapshots
 
 ---
 
-## 🔀 Multi-machine Setup
+## Multi-machine Setup
 
 ```ruby
 Vagrant.configure("2") do |config|
@@ -166,7 +166,7 @@ vagrant status # Show status of all machines
 
 ---
 
-## 🔌 Plugins
+## Plugins
 
 ```bash
 vagrant plugin list # List installed plugins
@@ -184,7 +184,7 @@ vagrant plugin uninstall vagrant-libvirt # Remove plugin
 
 ---
 
-## ⚠️ Troubleshooting
+## Troubleshooting
 
 ```bash
 vagrant up --debug # Run with debug output

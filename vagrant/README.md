@@ -1,69 +1,118 @@
-# Vagrant : [DevOps Journey: Vagrant 101 Tutorial - All you need to know to get started with Vagrant](https://www.youtube.com/watch?v=a6W1hF9CgDQ)
+# Vagrant
 
-Vagrant est un outil de gestion de machines virtuelles (VMs) qui simplifie le processus de création, de configuration et de déploiement d'environnements de développement reproductibles (environnements de développement homogènes). Il permet aux développeurs de configurer rapidement des environnements de travail identiques, facilitant ainsi le partage de configurations entre les membres d'une équipe et garantissant que le code fonctionne de manière cohérente sur différents systèmes.
+> Based on [DevOps Journey — Vagrant 101 Tutorial](https://www.youtube.com/watch?v=a6W1hF9CgDQ)
 
-![vagrant](./vagrant.png)  
+Vagrant is a tool from HashiCorp. It creates and manages virtual machines (VMs). You describe the VM in one file, and Vagrant creates it. Everybody in the team gets the same environment, so the code works the same way on every computer.
 
-Gérer diverses machines virtuelles et les configurer est assez fastidieux. Avec Vagrant, nous pouvons gérer, configurer et exécuter plusieurs machines virtuelles à l'aide d'un fichier « Vagrantfile ».  
-Un Vagrantfile contient la configuration de la machine virtuelle, telle que l'OS, la RAM, le stockage, etc. Lorsque nous exécutons la commande vagrant up dans un terminal, Vagrant lit le Vagrantfile et commence à exécuter et à créer la machine virtuelle..
+![vagrant](./vagrant1.png)
 
-## Vagrantfile  
+Creating and configuring VMs by hand takes a lot of time. With Vagrant, you write the configuration of one or more VMs in a `Vagrantfile`. Then you run `vagrant up`, and Vagrant reads the file and creates the VMs.
 
-Le Vagrantfile est le fichier de configuration qui décrit la configuration de la machine virtuelle.  
-Il utilise une syntaxe sen Ruby.  
-Il contient toutes les informations nécessaires pour qu'un autre utilisateur puisse recréer la même machine virtuelle.  
-Si un utilisateur a besoin de recréer la machine virtuelle, seul le Vagrantfile est partagé.  
+## Vagrantfile
+
+The `Vagrantfile` contains the configuration of the VM: image, CPU, RAM, network, storage, provisioning.
+
+- It uses Ruby syntax.
+- It contains everything: you only need to share this file to create the same VM on another computer.
+- You can save it in Git with your project.
 
 ![vagrant3](./vagrant3.png)
 
-## Vagrant Provisioner
+## Provisioning
 
-Vous pouvez également ajouter des scripts de provisionnement au Vagrantfile.  
-Vous pouvez également utiliser Ansible, Chef ou puppet comme provisionneurs.  
+Provisioning means configuring the VM after it starts. You can use:
 
-## [Vagrant Box == Virtual Machine Image](https://portal.cloud.hashicorp.com/vagrant/discover)  
+- Shell scripts (in the Vagrantfile or in a separate file)
+- Configuration tools: Ansible, Chef, Puppet
 
-Les boxes sont le format de package pour Vagrant.
-Les boxes peuvent être facilement téléchargées en utilisant la commande vagrant box add.
-Chaque box est limitée à fonctionner avec les providers pris en charge. Donc, lors du choix de la box, vérifiez si elle correspond à votre provider (VirtualBox/KVM/Hyper-V/VMware).  
+## Boxes
 
-## Networking  
+A box is a VM image for Vagrant. You can find boxes on the [HashiCorp Vagrant registry](https://portal.cloud.hashicorp.com/vagrant/discover) and download them with:
 
-Le Public Networking permet d'accéder à la machine virtuelle depuis l'extérieur de votre machine hôte, rendant possible l'accès à partir d'autres appareils sur le réseau.  
-Le Private Networking estreint l'accès à la machine virtuelle à une adresse privée, généralement utilisée pour la communication interne entre machines virtuelles sur le même hôte.  
-Le Port Forwarding consiste à lier un port de votre machine hôte à un port de la machine virtuelle.  
+```bash
+vagrant box add <box-name>
+```
 
-## [Command-Line Interface](https://developer.hashicorp.com/vagrant/docs/cli)
+Each box works only with some providers. Check that the box is compatible with your provider (VirtualBox, libvirt/KVM, Hyper-V, VMware).
 
-Toutes les interactions avec Vagrant se font en ligne de commande.  
+### ⚠️ The HCP Vagrant registry will close
+
+HashiCorp will stop HCP Vagrant, the public registry of boxes (the old name was Vagrant Cloud). Short box names like `bento/ubuntu-24.04` are downloaded from this registry. When it closes, Vagrantfiles that use these names will not work anymore. The Vagrant command line tool will continue to work.
+
+| Step | Date |
+|---|---|
+| No more new boxes | December 14, 2026 |
+| End of support | March 15, 2027 |
+| Registry closed, boxes deleted | June 7, 2027 |
+
+Source: [HCP Vagrant deprecation notice](https://developer.hashicorp.com/hcp/docs/vagrant/hcp-vagrant-eol)
+
+**Solution:** save a copy of your boxes and host them yourself (shared folder, web server, S3 bucket).
+
+```bash
+# List the boxes on your computer
+vagrant box list
+
+# Save a box in a .box file
+vagrant box repackage <box-name> <provider> <version>
+
+# Add the box again later, from a file or a URL
+vagrant box add my-box ./package.box
+```
+
+In the `Vagrantfile`, use your own box:
+
+```ruby
+config.vm.box = "my-box"
+config.vm.box_url = "https://my-server/boxes/package.box"
+```
+
+## Network
+
+| Mode | Use |
+|---|---|
+| **Port forwarding** | Connects a port of the host to a port of the VM |
+| **Private network** | Private IP address, the VM is visible only from the host and other VMs on it |
+| **Public network** | The VM is on your local network, other devices can access it |
+
+## Commands
+
+You use Vagrant only with the [command line](https://developer.hashicorp.com/vagrant/docs/cli).
+
 ![vagrant2](./vagrant2.png)
 
-## Ressources  
+| Command | Action |
+|---|---|
+| `vagrant init <box>` | Create a `Vagrantfile` |
+| `vagrant up` | Create and start the VM |
+| `vagrant ssh` | Connect to the VM |
+| `vagrant status` | Show the state of the VM |
+| `vagrant provision` | Run the provisioning again |
+| `vagrant reload` | Restart the VM with the new `Vagrantfile` |
+| `vagrant halt` | Stop the VM |
+| `vagrant destroy` | Delete the VM |
 
-### [Vagrant Cheat Sheet](https://gist.github.com/wpscholar/a49594e2e2b918f4d0c4)
+## Resources
 
-### [Hashicorp: Tutorials](https://developer.hashicorp.com/vagrant/tutorials)
+**Official**  
 
-### [Hashicorp: github](https://github.com/hashicorp/vagrant?tab=readme-ov-file)
+- [HashiCorp tutorials](https://developer.hashicorp.com/vagrant/tutorials)
+- [Vagrant on GitHub](https://github.com/hashicorp/vagrant)
+- [Cheat sheet](https://gist.github.com/wpscholar/a49594e2e2b918f4d0c4)
 
-### [Vagrant Libvirt Plugin to Manage KVM Virtual Machines on Ubuntu Linux](https://www.youtube.com/watch?v=PywnhhboKyQ)
+**Tutorials (English)**  
 
-### [Stéphane Robert: Maitriser Vagrant](https://blog.stephane-robert.info/docs/infra-as-code/provisionnement/vagrant/introduction/)
+- [devopscube — Vagrant tutorial for beginners](https://devopscube.com/vagrant-tutorial-beginners/)
+- [Installation, setup and cheat sheet](https://learningdevops.hashnode.dev/chapter-3-about-vagrant-installation-and-setup-vagrant-cheat-sheet)
+- [Vagrant libvirt plugin for KVM on Ubuntu](https://www.youtube.com/watch?v=PywnhhboKyQ) (video)
 
-### [Eazytraining: Formation Gratuite Complète Vagrant pour DevOps](https://www.youtube.com/watch?v=z4209uoIbmk)
+**Tutorials (French)**  
 
-### [Eazytraining: Formation Gratuite Complète Vagrant pour DevOps ==> github des labs](https://github.com/eazytrainingfr/vagrant-for-devops)
+- [Stéphane Robert — Maîtriser Vagrant](https://blog.stephane-robert.info/docs/infra-as-code/provisionnement/vagrant/introduction/)
+- [Eazytraining — Full Vagrant course for DevOps](https://www.youtube.com/watch?v=z4209uoIbmk) (video) · [labs](https://github.com/eazytrainingfr/vagrant-for-devops)
+- [Xavki — Vagrant K8s series](https://www.youtube.com/watch?v=2P8jQIN5hr0) (video) · [code](https://gitlab.com/vagrant3/vagrant-k8s)
 
-### [About Vagrant Installation and Setup & Vagrant Cheat Sheet](https://learningdevops.hashnode.dev/chapter-3-about-vagrant-installation-and-setup-vagrant-cheat-sheet)
+**Examples**  
 
-### [devopscube: Vagrant Tutorial For Beginners](https://devopscube.com/vagrant-tutorial-beginners/)
-
-### [DevOps Journey - Vagrant 101 Tutorial - Vagrant Labs](https://github.com/devopsjourney1/vagrant-labs)
-
-### [Xavki: VAGRANT K8S | 1. OBJECTIFS ET PRINCIPES](https://www.youtube.com/watch?v=2P8jQIN5hr0)
-
-### [Xavki: VAGRANT K8S | 2. SQUELETTE DU VAGRANTFILE](https://www.youtube.com/watch?v=5hmsWOmI2kY)
-
-### [Xavki: VAGRANT K8S | Tutorials gitlab VAGRANT K8S](https://gitlab.com/vagrant3/vagrant-k8s)
-
-### [Vagrantfile Examples](https://github.com/patrickdlee/vagrant-examples)
+- [DevOps Journey — Vagrant labs](https://github.com/devopsjourney1/vagrant-labs)
+- [Vagrantfile examples](https://github.com/patrickdlee/vagrant-examples)  
