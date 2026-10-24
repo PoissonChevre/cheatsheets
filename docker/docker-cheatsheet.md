@@ -1,362 +1,306 @@
-# 🐳 Docker — Cheat Sheet
-*Container platform for building, shipping, and running applications in isolated environments.*
+# Docker — Cheat Sheet
+
+Docker runs applications in **containers**. A container is an isolated environment that contains everything the application needs (code, libraries, settings). It does not depend on what is installed on the host, so it works the same way on every machine: laptop, datacenter or cloud.
+
+**Containers vs VMs:** a VM virtualizes a full operating system. A container shares the kernel of the host, so it starts in seconds and uses much less CPU, RAM and disk.
+
+- Docs: <https://docs.docker.com>
+- Install: <https://docs.docker.com/engine/install/> (Docker Engine) or <https://docs.docker.com/desktop/> (Docker Desktop)
+- Example projects: <https://github.com/docker/awesome-compose>
+- Networking (all network types): [networking.md](./networking.md)
 
 ---
 
-## 🖼️ Images
-*Build, manage, and inspect container images.*
+## General
 
 ```bash
-docker build -t myapp:1.0 .  # Build image from Dockerfile in current directory
-## -t tags image with name:version; use . for current dir context
+sudo systemctl start docker     # Start the Docker daemon (Linux)
+sudo systemctl enable docker    # Start it at boot
+sudo usermod -aG docker $USER   # Use docker without sudo (log out and in again)
 
-docker build -t myapp:1.0 -f Dockerfile.prod .  # Build with specific Dockerfile
-## -f specifies alternate Dockerfile path
-
-docker build --build-arg ENV=prod -t myapp:1.0 .  # Pass build arguments
-## Arguments available during build via ARG in Dockerfile
-
-docker images  # List all images
-## Shows repository, tag, image ID, size
-
-docker image ls  # Alternative list command
-docker rmi myapp:1.0  # Remove image by name:tag
-docker rmi -f myapp:1.0  # Force remove (with -f flag)
-docker image prune  # Remove unused images
-## Warning: removes all dangling (untagged) images
-
-docker tag myapp:1.0 myapp:latest  # Create tag alias
-## Useful for marking stable/latest versions
-
-docker push registry.example.com/myapp:1.0  # Push image to registry
-## Requires docker login first with credentials
-
-docker pull nginx:latest  # Download image from Docker Hub
-## Latest tag assumed if tag not specified
-
-docker inspect myapp:1.0  # Detailed image metadata
-## Shows layers, architecture, environment variables, exposed ports
-
-docker history myapp:1.0  # Show image layer history
-## Each RUN, COPY, ADD creates a layer
+docker version                  # Client and server versions
+docker info                     # System-wide information
+docker --help                   # Help (works on every subcommand: docker run --help)
 ```
 
-## Dockerfile best practices
-[Minimize layers, use multi-stage builds, clean up after each RUN, pin versions]
+---
+
+## Images
+
+An image is a read-only package used to create containers.
+
+```bash
+docker build -t myapp:1.0 .                      # Build from the Dockerfile in the current folder
+docker build -t myapp:1.0 -f Dockerfile.prod .   # Use another Dockerfile
+docker build --build-arg ENV=prod -t myapp:1.0 . # Pass a build argument (ARG in Dockerfile)
+docker build --no-cache -t myapp:1.0 .           # Build without cache
+
+docker images                    # List local images (same as: docker image ls)
+docker tag myapp:1.0 myapp:latest  # Add another tag to an image
+docker inspect myapp:1.0         # Details: layers, env variables, ports
+docker history myapp:1.0         # Layers (one per RUN, COPY, ADD)
+
+docker rmi myapp:1.0             # Delete an image
+docker rmi -f myapp:1.0          # Force delete
+```
+
+### Dockerfile — multi-stage build
+
+The first stage builds the app, the second keeps only what is needed. The final image is smaller.
 
 ```dockerfile
-# Multi-stage build (smaller final image)
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
-FROM node:18-alpine
+FROM node:22-alpine
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY . .
 EXPOSE 3000
+USER node
 CMD ["node", "app.js"]
 ```
 
+Good practices: pin image versions, use small base images (alpine, slim), add a `.dockerignore`, don't run as root.
+
 ---
 
-## 🐚 Containers
-*Create, run, manage, and inspect containers.*
+## Registry (Docker Hub, GHCR...)
 
 ```bash
-docker run --name myapp -d nginx:latest  # Create and run container in background
-## -d for detached mode; --name gives container a readable name
-
-docker run -it ubuntu:latest /bin/bash  # Run interactively with terminal
-## -i (interactive) -t (allocate tty) for shell access
-
-docker run -p 8080:80 nginx:latest  # Map ports: host:container
-## Exposes container port 80 on host port 8080
-
-docker run -e APP_ENV=prod -d myapp:1.0  # Set environment variables
-## -e sets single variable; use --env-file for multiple
-
-docker run --env-file .env.prod -d myapp:1.0  # Load env from file
-## File format: KEY=value (one per line)
-
-docker run -v /data:/app/data nginx:latest  # Mount volume: host_path:container_path
-## Persists data outside container lifecycle
-
-docker run --memory 512m --cpus 1.5 myapp:1.0  # Set resource limits
-## --memory for RAM; --cpus for CPU cores
-
-docker run --restart unless-stopped myapp:1.0  # Auto-restart policy
-## Options: no, always, unless-stopped, on-failure
-
-docker ps  # List running containers
-docker ps -a  # List all containers (running and stopped)
-docker ps -q  # List only container IDs
-
-docker start myapp  # Start stopped container
-docker stop myapp  # Stop running container gracefully
-docker kill myapp  # Force stop container (SIGKILL)
-docker restart myapp  # Stop and start container
-
-docker rm myapp  # Remove container (must be stopped first)
-docker rm -f myapp  # Force remove running container
-
-docker inspect myapp  # Detailed container metadata
-## Shows mounts, environment, network settings, resource limits
-
-docker diff myapp  # Show filesystem changes since image
-## A = added, C = changed, D = deleted
-```
-
-## Container lifecycle
-[Create → Start → Run → Stop → Remove]
-
-```bash
-docker create --name myapp nginx:latest  # Create container but don't start
-docker start myapp  # Start the container
-docker pause myapp  # Pause running container
-docker unpause myapp  # Resume paused container
-docker exec -it myapp /bin/bash  # Run command in running container
-## Useful for debugging, maintenance, one-off tasks
+docker login                               # Docker Hub
+docker login ghcr.io -u <username>         # GitHub Container Registry
+docker search nginx                        # Search Docker Hub
+docker pull nginx:1.27                     # Download an image (tag "latest" if no tag)
+docker tag myapp:1.0 <username>/myapp:1.0  # Name the image for the registry
+docker push <username>/myapp:1.0           # Upload the image
 ```
 
 ---
 
-## 💾 Volumes
-*Manage persistent storage and data sharing.*
+## Containers
+
+A container is a running instance of an image.
+
+### Run
 
 ```bash
-docker volume create mydata  # Create named volume
-docker volume ls  # List all volumes
-docker volume inspect mydata  # Show volume details
-docker volume rm mydata  # Remove volume
-docker volume prune  # Remove unused volumes
-## Warning: permanently deletes data
-
-docker run -v mydata:/app/data myapp:1.0  # Use named volume
-## Path /app/data in container maps to mydata volume
-
-docker run -v $(pwd):/app myapp:1.0  # Bind mount: host path to container
-## $(pwd) mounts current directory; useful for development
-
-docker run -v /app/logs --mount type=volume,source=logs,target=/app/logs myapp:1.0  # Mount syntax
-## --mount is newer syntax; more explicit than -v
-
-docker inspect --type volume mydata  # View volume mount point on host
-## Useful for finding where data actually stored on disk
+docker run --name web -d nginx           # Run in background (-d) with a name
+docker run -it ubuntu bash               # Interactive shell (-i interactive, -t terminal)
+docker run --rm -it ubuntu bash          # Delete the container when you exit
+docker run -p 8080:80 nginx              # Publish a port: host:container
+docker run -e APP_ENV=prod myapp:1.0     # Set an environment variable
+docker run --env-file .env myapp:1.0     # Load variables from a file (KEY=value)
+docker run --restart unless-stopped myapp:1.0  # Restart policy: no, always, unless-stopped, on-failure
 ```
 
-## Volume driver
-[Default local driver stores on host; plugins support cloud storage]
+### Manage
 
 ```bash
-docker volume create --driver local mydata  # Explicit driver specification
-docker volume create --driver nfs -o addr=10.0.0.1 mydata  # NFS volume
-## Requires driver installed; useful for shared storage
+docker ps                  # Running containers
+docker ps -a               # All containers (running and stopped)
+docker ps -q               # IDs only
+
+docker start web           # Start a stopped container
+docker stop web            # Stop (SIGTERM, then SIGKILL after 10 s)
+docker kill web            # Stop now (SIGKILL)
+docker restart web
+docker pause web / docker unpause web
+
+docker rm web              # Delete a stopped container
+docker rm -f web           # Stop and delete
+
+docker create --name web nginx   # Create without starting
 ```
 
----
-
-## 🌐 Networks
-*Create and manage container networking.*
+### Inspect and debug
 
 ```bash
-docker network create mynet  # Create custom bridge network
-## Default bridge network has limitations (no DNS by name)
+docker logs web                  # Logs
+docker logs -f web               # Follow logs (like tail -f)
+docker logs --tail 100 web       # Last 100 lines
+docker logs --since 1h -t web    # Last hour, with timestamps
 
-docker network ls  # List all networks
-docker network inspect mynet  # Show network configuration
+docker exec -it web sh           # Open a shell in a running container
+docker exec web curl localhost:80  # Run one command (the tool must exist in the image)
+docker inspect web               # Details: mounts, env, network, limits
+docker top web                   # Processes in the container
+docker diff web                  # Files changed since the image (A added, C changed, D deleted)
+docker stats                     # Live CPU, RAM, network usage
+docker events                    # Live events (create, start, stop...)
 
-docker run --network mynet --name app1 myapp:1.0  # Connect container to network
-docker run --network mynet --name app2 myapp:1.0  # Another container on same network
-## Containers on same network can reach each other by hostname
+docker cp web:/var/log/app.log ./   # Copy from container to host
+docker cp ./config.txt web:/app/    # Copy from host to container
 
-docker network connect mynet myapp  # Connect running container to network
-docker network disconnect mynet myapp  # Disconnect container from network
-
-docker run --link db:database myapp:1.0  # Link containers (deprecated)
-## Use custom networks instead; simpler and more reliable
-```
-
-## Network types
-[bridge (custom), host (share host network), overlay (swarm), none (no networking)]
-
-```bash
-docker run --network host myapp:1.0  # Use host network (bypass isolation)
-## Ports directly exposed on host; useful for debugging
-
-docker run --network none myapp:1.0  # No network access
-## Complete isolation; app can't reach network
+docker run -it --user root myapp:1.0 sh   # Run as root to debug permissions
 ```
 
 ---
 
-## 📦 Docker Compose
-*Define multi-container applications in YAML.*
+## Volumes
+
+Data in a container is lost when the container is deleted. Volumes keep it.
+
+| Type | Example | Use |
+|---|---|---|
+| Named volume | `-v mydata:/app/data` | Data managed by Docker (databases) |
+| Bind mount | `-v $(pwd):/app` | A host folder in the container (development) |
+
+```bash
+docker volume create mydata
+docker volume ls
+docker volume inspect mydata     # Shows the path on the host
+docker volume rm mydata
+
+docker run -v mydata:/app/data myapp:1.0     # Named volume
+docker run -v $(pwd):/app myapp:1.0          # Bind mount
+docker run --mount type=volume,source=mydata,target=/app/data myapp:1.0  # Same, longer syntax
+docker run -v mydata:/app/data:ro myapp:1.0  # Read-only
+```
+
+NFS volume (with the default `local` driver):
+
+```bash
+docker volume create --driver local \
+  --opt type=nfs \
+  --opt o=addr=10.0.0.1,rw \
+  --opt device=:/export/data \
+  nfsdata
+```
+
+---
+
+## Networks (basics)
+
+```bash
+docker network create mynet               # Custom bridge network
+docker network ls
+docker network inspect mynet
+docker run -d --network mynet --name app1 myapp:1.0
+docker run -d --network mynet --name app2 myapp:1.0   # app2 can reach app1 by name
+docker network connect mynet web          # Add a running container to a network
+docker network disconnect mynet web
+docker network rm mynet
+```
+
+All network types (bridge, host, macvlan, ipvlan, overlay, none): see [networking.md](./networking.md).
+
+---
+
+## Docker Compose
+
+Describe a multi-container application in one YAML file (`compose.yaml`).
 
 ```yaml
-version: '3.8'  # Compose file format version
 services:
-  web:  # Service name
-    image: myapp:1.0  # Image to use
+  web:
+    image: myapp:1.0
     ports:
-      - "8080:3000"  # Port mapping
-    environment:  # Environment variables
+      - "8080:3000"
+    environment:
       - APP_ENV=prod
       - DB_HOST=db
     volumes:
-      - ./src:/app/src  # Bind mount for development
+      - ./src:/app/src          # Bind mount (development)
     depends_on:
-      - db  # Wait for other service to start
-    restart: unless-stopped  # Restart policy
-    networks:
-      - mynet  # Custom network
-
-  db:
-    image: postgres:15-alpine
-    environment:
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=appdb
-    volumes:
-      - db_data:/var/lib/postgresql/data  # Named volume
-    ports:
-      - "5432:5432"
+      db:
+        condition: service_healthy   # Wait until db is ready, not only started
+    restart: unless-stopped
     networks:
       - mynet
-    healthcheck:  # Check service readiness
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_PASSWORD=secret   # Use a .env file or secrets in real projects
+      - POSTGRES_DB=appdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - mynet
+    healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    networks:
-      - mynet
-
 volumes:
-  db_data:  # Define named volumes
+  db_data:
 
 networks:
-  mynet:  # Define custom network
+  mynet:
     driver: bridge
 ```
 
-## Docker Compose commands
-[Define app structure once, manage entire stack]
+The `version:` line is not needed anymore.
 
 ```bash
-docker-compose up  # Start all services
-docker-compose up -d  # Start in background
-docker-compose up -d --scale worker=3  # Scale service to 3 replicas
+docker compose up -d                  # Start all services in background
+docker compose up -d --scale worker=3 # 3 replicas of a service
+docker compose ps
+docker compose logs -f web
+docker compose exec db psql -U postgres
+docker compose build
+docker compose restart web
+docker compose down                   # Stop and delete containers and networks
+docker compose down -v                # Also delete volumes
+```
 
-docker-compose down  # Stop and remove containers
-docker-compose down -v  # Also remove volumes
+`docker compose` (with a space) is Compose v2. The old `docker-compose` command is deprecated.
 
-docker-compose logs  # View logs from all services
-docker-compose logs -f web  # Follow logs from specific service
+---
 
-docker-compose ps  # List containers
-docker-compose exec db psql -U postgres  # Execute command in service container
-docker-compose build  # Build all services
-docker-compose restart web  # Restart specific service
+## Resource limits
+
+```bash
+docker run --memory 512m myapp:1.0                       # Max RAM
+docker run --memory-reservation 256m --memory 512m myapp:1.0  # Soft limit 256 MB, hard limit 512 MB
+docker run --memory 512m --memory-swap 1g myapp:1.0      # RAM + swap = 1 GB
+docker run --cpus 1.5 myapp:1.0                          # Max 1.5 CPU
+docker run --cpuset-cpus 0,1 myapp:1.0                   # Only CPU 0 and 1
+docker update --memory 1g --cpus 2 web                   # Change limits of a running container
 ```
 
 ---
 
-## 📊 Resource Limits
-*Constrain CPU and memory usage.*
+## Cleanup
 
 ```bash
-docker run --memory 512m myapp:1.0  # Limit to 512MB RAM
-docker run --memory-swap 1g myapp:1.0  # Include swap: 1GB total (RAM + swap)
-docker run --cpus 1.5 myapp:1.0  # Limit to 1.5 CPU cores
+docker system df             # Disk space used by Docker
 
-docker run --cpuset-cpus 0,1 myapp:1.0  # Pin to specific CPUs
-## Useful on multi-socket systems for performance
+docker container prune       # Delete stopped containers
+docker image prune           # Delete dangling images (no tag)
+docker image prune -a        # Delete all images not used by a container
+docker volume prune          # Delete unused volumes — data is lost!
+docker network prune         # Delete unused networks
+docker builder prune         # Delete build cache
 
-docker update --memory 1g --cpus 2 myapp  # Update running container limits
-## Changes apply immediately
-```
-
-## Memory strategies
-[Reserve vs limit: reserve guarantees; limit prevents OOM]
-
-```bash
-docker run --memory-reservation 256m --memory 512m myapp:1.0  # Reserve 256MB, allow burst to 512MB
-## Soft limit (reservation) vs hard limit (memory)
-
-docker stats myapp  # Monitor live resource usage
-## Shows CPU %, memory usage, network I/O, block I/O
+docker system prune          # Stopped containers + unused networks + dangling images + build cache
+docker system prune -a --volumes   # Everything unused, volumes included — careful!
 ```
 
 ---
 
-## 📝 Logs & Debug
-*Inspect and troubleshoot containers.*
+## Resources
 
-```bash
-docker logs myapp  # View container logs
-docker logs -f myapp  # Follow logs (tail -f style)
-docker logs --tail 100 myapp  # Show last 100 lines
-docker logs --since 1h myapp  # Logs from last hour
-docker logs --timestamps myapp  # Include timestamps
+Official
 
-docker events  # Stream container events (creates, starts, stops)
-docker stats  # Real-time resource stats for all containers
-docker top myapp  # View processes running in container
+- [Docker docs](https://docs.docker.com)
+- [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
+- [Compose file reference](https://docs.docker.com/reference/compose-file/)
+- [Docker Desktop with WSL 2 (Windows)](https://docs.docker.com/desktop/wsl/)
 
-docker exec -it myapp /bin/sh  # Get shell inside running container
-## Useful for debugging application state
+Tutorials
 
-docker cp myapp:/var/log/app.log ./  # Copy file from container to host
-docker cp ./config.txt myapp:/app/  # Copy from host to container
+- [Docker Curriculum](https://docker-curriculum.com/) · [code](https://github.com/prakhar1989/docker-curriculum) — hands-on tutorial, deploys an app on AWS
+- [TechWorld with Nana — Docker crash course (1 h)](https://www.youtube.com/watch?v=pg19Z8LL06w) (video)
+- [TechWorld with Nana — Docker tutorial for beginners (3 h)](https://www.youtube.com/watch?v=3c-iBn73dDE) (video)
+- [TechWorld with Nana — Docker Compose tutorial](https://www.youtube.com/watch?v=SXwC9fSwct8) (video)
 
-docker run --rm -it myapp:1.0 /bin/sh  # Temporary container for debugging
-## --rm automatically removes container after exit
-```
+Other cheat sheets and examples
 
-## Common debugging techniques
-[Run as, check networking, trace system calls, examine logs]
-
-```bash
-docker run -it --user root myapp:1.0 /bin/sh  # Run as specific user for permissions
-docker exec myapp netstat -an  # Check network connections
-docker exec myapp curl localhost:3000  # Test internal connectivity
-docker run --privileged myapp:1.0  # Run with extended privileges for low-level debugging
-## Use sparingly; reduces security isolation
-```
-
----
-
-## 🧹 Cleanup
-*Remove unused resources and reclaim disk space.*
-
-```bash
-docker container prune  # Remove all stopped containers
-## Warning: deletes all non-running containers
-
-docker image prune  # Remove dangling images (untagged)
-docker image prune -a  # Remove all unused images
-## Include images not used by any container
-
-docker volume prune  # Remove unused volumes
-## Warning: permanently deletes volume data
-
-docker network prune  # Remove unused networks
-
-docker system prune  # Clean everything (containers, images, volumes, networks)
-docker system prune -a  # Also remove unused images
-docker system df  # Show space usage by resource type
-
-docker rmi $(docker images -q)  # Remove all images
-## Dangerous; use with care
-```
-
-## Disk space management
-[Build cache can grow large; use --no-cache to rebuild clean]
-
-```bash
-docker builder prune  # Clean build cache
-docker build --no-cache -t myapp:1.0 .  # Rebuild without cache
-```
+- [Spacelift — Docker commands cheat sheet](https://spacelift.io/blog/docker-commands-cheat-sheet)
+- [wsargent/docker-cheat-sheet](https://github.com/wsargent/docker-cheat-sheet)
+- [Awesome Compose examples](https://github.com/docker/awesome-compose)
