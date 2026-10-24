@@ -1,10 +1,12 @@
-# 🛠 PowerShell — Cheat Sheet
-*Microsoft's cross-platform task automation and configuration management framework*
+# PowerShell — Cheat Sheet
+
+Microsoft's cross-platform task automation and configuration management framework
 
 ---
 
 ## Basics & Syntax
-*Essential PowerShell language fundamentals*
+
+Essential PowerShell language fundamentals
 
 ```powershell
 # Variable assignment
@@ -30,7 +32,8 @@ $hash["key"]  # Access hashtable value
 ```
 
 ## Navigation
-*Browse directories and work with paths*
+
+Browse directories and work with paths
 
 ```powershell
 Get-Location  # Show current directory (pwd alias)
@@ -44,7 +47,8 @@ Pop-Location  # Return to saved location
 ```
 
 ## Files & Permissions
-*Create, modify, delete, and secure files*
+
+Create, modify, delete, and secure files
 
 ```powershell
 New-Item -ItemType Directory -Path C:\NewFolder  # Create directory
@@ -63,7 +67,8 @@ Add-Content -Path C:\file.txt -Value "append"  # Append to file
 ```
 
 ## Permissions (NTFS ACL)
-*Manage file and folder access control*
+
+Manage file and folder access control
 
 ```powershell
 Get-Acl -Path C:\file.txt  # Get file permissions
@@ -77,7 +82,8 @@ icacls C:\file.txt /remove "user"  # Remove user permissions
 ```
 
 ## Processes
-*Manage running applications and background tasks*
+
+Manage running applications and background tasks
 
 ```powershell
 Get-Process  # List running processes
@@ -93,7 +99,8 @@ Get-Process | Sort-Object -Property WorkingSet -Descending  # Top memory users
 ```
 
 ## Networking
-*Network diagnostics, configuration, and connectivity testing*
+
+Network diagnostics, configuration, and connectivity testing
 
 ```powershell
 ipconfig  # Show all network interfaces and IPs
@@ -117,7 +124,8 @@ Get-NetTCPConnection -LocalPort 443  # Connections on specific port
 ```
 
 ## String Manipulation
-*Format, extract, and transform text*
+
+Format, extract, and transform text
 
 ```powershell
 $string = "Hello World"  # Create string
@@ -148,7 +156,8 @@ $string | Select-String "pattern"  # Search within string
 ```
 
 ## Error Handling & Debugging
-*Catch exceptions and troubleshoot scripts*
+
+Catch exceptions and troubleshoot scripts
 
 ```powershell
 try { 
@@ -180,7 +189,8 @@ Write-Debug "Debug message" -Debug  # Debug output (requires -Debug)
 ```
 
 ## Modules & Imports
-*Load and work with PowerShell modules*
+
+Load and work with PowerShell modules
 
 ```powershell
 Get-Module  # List currently loaded modules
@@ -199,7 +209,8 @@ Update-Module ModuleName  # Update installed module
 ```
 
 ## Script Best Practices
-*Write maintainable, robust, and efficient scripts*
+
+Write maintainable, robust, and efficient scripts
 
 ```powershell
 #!/usr/bin/env pwsh  # Shebang for cross-platform scripts
@@ -300,7 +311,8 @@ if (-not $result) {
 ```
 
 ## Variables & Data Types
-*Work with PowerShell data types and variables*
+
+Work with PowerShell data types and variables
 
 ```powershell
 # String operations
@@ -333,7 +345,8 @@ $x -or $y  # Logical OR
 ```
 
 ## Conditionals & Loops
-*Control program flow and iteration*
+
+Control program flow and iteration
 
 ```powershell
 # If-else statements
@@ -376,7 +389,8 @@ continue  # Skip to next iteration
 ```
 
 ## Functions
-*Create reusable function blocks with parameters*
+
+Create reusable function blocks with parameters
 
 ```powershell
 # Simple function
@@ -423,7 +437,8 @@ function Remove-UserAccount {
 ```
 
 ## Arrays & Collections
-*Work with lists and collections of data*
+
+Work with lists and collections of data
 
 ```powershell
 $array = @(1, 2, 3)  # Create array
@@ -441,7 +456,8 @@ $array | Measure-Object -Average  # Calculate average
 ```
 
 ## Output & Formatting
-*Control command output display and formatting*
+
+Control command output display and formatting
 
 ```powershell
 Write-Host "message"  # Write to console (colored output)
@@ -463,7 +479,8 @@ Get-Process | Measure-Object  # Count and statistics
 ```
 
 ## Pipeline & Data Flow
-*Chain commands and pass data through the pipeline*
+
+Chain commands and pass data through the pipeline
 
 ```powershell
 command1 | command2  # Pipe output as input
