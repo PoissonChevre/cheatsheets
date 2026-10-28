@@ -72,6 +72,7 @@ with a short comment explaining what it does.
 | Vim | [vim-cheatsheet.md](./vim/vim-cheatsheet.md) | Modes, navigation, search/replace, macros |
 | tmux | [tmux-cheatsheet.md](./tmux/tmux-cheatsheet.md) | Sessions, windows, panes, copy mode |
 | VS Code | [vscode-cheatsheet.md](./vscode/vscode-cheatsheet.md) | Shortcuts, multi-cursor, Remote-SSH |
+| KDE Plasma | [kde-cheatsheet.md](./kde/kde-cheatsheet.md) | Desktop shortcuts, windows, Spectacle, Konsole, Dolphin |
 | CLI tools | [utilities.md](./linux/utilities.md) | curl, wget, jq, rsync, netcat, nmap, strace, lsof, fzf |
 
 ## Windows
